@@ -11,16 +11,17 @@ libadwaita_resources = gnome.compile_resources(
 )
 
 adw_public_enum_headers = [
+  'adw-alert-dialog.h',
   'adw-animation.h',
   'adw-banner.h',
   'adw-breakpoint.h',
+  'adw-dialog.h',
   'adw-flap.h',
   'adw-fold-threshold-policy.h',
   'adw-easing.h',
   'adw-header-bar.h',
   'adw-leaflet.h',
   'adw-length-unit.h',
-  'adw-message-dialog.h',
   'adw-navigation-direction.h',
   'adw-style-manager.h',
   'adw-squeezer.h',
@@ -95,8 +96,10 @@ adw_marshalers = gnome.genmarshal('adw-marshalers',
 libadwaita_private_sources += adw_marshalers
 
 src_headers = [
+  'adw-about-dialog.h',
   'adw-about-window.h',
   'adw-action-row.h',
+  'adw-alert-dialog.h',
   'adw-animation.h',
   'adw-animation-target.h',
   'adw-animation-util.h',
@@ -115,6 +118,7 @@ src_headers = [
   'adw-clamp-layout.h',
   'adw-clamp-scrollable.h',
   'adw-combo-row.h',
+  'adw-dialog.h',
   'adw-easing.h',
   'adw-entry-row.h',
   'adw-enum-list-model.h',
@@ -131,6 +135,7 @@ src_headers = [
   'adw-navigation-view.h',
   'adw-overlay-split-view.h',
   'adw-password-entry-row.h',
+  'adw-preferences-dialog.h',
   'adw-preferences-group.h',
   'adw-preferences-page.h',
   'adw-preferences-row.h',
@@ -171,8 +176,10 @@ libadwaita_init_public_types = custom_target('adw-public-types.c',
 )
 
 src_sources = [
+  'adw-about-dialog.c',
   'adw-about-window.c',
   'adw-action-row.c',
+  'adw-alert-dialog.c',
   'adw-animation.c',
   'adw-animation-target.c',
   'adw-animation-util.c',
@@ -191,6 +198,7 @@ src_sources = [
   'adw-clamp-layout.c',
   'adw-clamp-scrollable.c',
   'adw-combo-row.c',
+  'adw-dialog.c',
   'adw-easing.c',
   'adw-entry-row.c',
   'adw-enum-list-model.c',
@@ -207,6 +215,7 @@ src_sources = [
   'adw-navigation-view.c',
   'adw-overlay-split-view.c',
   'adw-password-entry-row.c',
+  'adw-preferences-dialog.c',
   'adw-preferences-group.c',
   'adw-preferences-page.c',
   'adw-preferences-row.c',
@@ -242,7 +251,10 @@ src_sources = [
 libadwaita_private_sources += files([
   'adw-back-button.c',
   'adw-bidi.c',
+  'adw-bottom-sheet.c',
+  'adw-dialog-host.c',
   'adw-fading-label.c',
+  'adw-floating-sheet.c',
   'adw-gizmo.c',
   'adw-gtkbuilder-utils.c',
   'adw-indicator-bin.c',
@@ -267,25 +279,10 @@ libadwaita_public_sources += files(src_sources)
 install_headers(src_headers, subdir: libadwaita_header_subdir)
 
 glib_min_version = '>= 2.76.0'
-gtk_min_version = '>= 4.11.3'
+gtk_min_version = '>= 4.13.4'
 
 gio_dep = dependency('gio-2.0', version: glib_min_version)
-gtk_dep = dependency('gtk4',
-  version: gtk_min_version,
-  default_options: [
-    'warning_level=0',
-    'werror=false',
-    'introspection=@0@'.format(introspection_feature),
-    'documentation=false',
-    'gtk_doc=false',
-    'screenshots=false',
-    'update_screenshots=false',
-    'man-pages=false',
-    'build-demos=false',
-    'build-examples=false',
-    'build-tests=false',
-  ],
-)
+gtk_dep = dependency('gtk4', version: gtk_min_version)
 appstream_dep = dependency('appstream',
   fallback : ['appstream', 'appstream_dep'],
   default_options : [

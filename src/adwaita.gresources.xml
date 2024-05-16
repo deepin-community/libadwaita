@@ -12,14 +12,17 @@
     <file preprocess="xml-stripblanks">icons/scalable/status/adw-tab-unpin-symbolic.svg</file>
   </gresource>
   <gresource prefix="/org/gnome/Adwaita/ui">
+    <file preprocess="xml-stripblanks">adw-about-dialog.ui</file>
     <file preprocess="xml-stripblanks">adw-about-window.ui</file>
     <file preprocess="xml-stripblanks">adw-action-row.ui</file>
+    <file preprocess="xml-stripblanks">adw-alert-dialog.ui</file>
     <file preprocess="xml-stripblanks">adw-banner.ui</file>
     <file preprocess="xml-stripblanks">adw-combo-row.ui</file>
     <file preprocess="xml-stripblanks">adw-entry-row.ui</file>
     <file preprocess="xml-stripblanks">adw-expander-row.ui</file>
     <file preprocess="xml-stripblanks">adw-inspector-page.ui</file>
     <file preprocess="xml-stripblanks">adw-message-dialog.ui</file>
+    <file preprocess="xml-stripblanks">adw-preferences-dialog.ui</file>
     <file preprocess="xml-stripblanks">adw-preferences-group.ui</file>
     <file preprocess="xml-stripblanks">adw-preferences-page.ui</file>
     <file preprocess="xml-stripblanks">adw-preferences-window.ui</file>

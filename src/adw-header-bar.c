@@ -25,6 +25,7 @@
 
 #include "adw-back-button-private.h"
 #include "adw-bin.h"
+#include "adw-dialog.h"
 #include "adw-enums.h"
 #include "adw-gizmo-private.h"
 #include "adw-navigation-split-view.h"
@@ -46,6 +47,15 @@
  * features compared to it. Refer to `GtkHeaderBar` for details. It is typically
  * used as a top bar within [class@ToolbarView].
  *
+ * ## Dialog Integration
+ *
+ * When placed inside an [class@Dialog], `AdwHeaderBar` will display the dialog
+ * title intead of window title. It will also adjust the decoration layout to
+ * ensure it always has a close button and nothing else. Set
+ * [property@HeaderBar:show-start-title-buttons] and
+ * [property@HeaderBar:show-end-title-buttons] to `FALSE` to remove it if it's
+ * unwanted.
+ *
  * ## Navigation View Integration
  *
  * When placed inside an [class@NavigationPage], `AdwHeaderBar` will display the
@@ -54,9 +64,10 @@
  * When used together with [class@NavigationView] or [class@NavigationSplitView],
  * it will also display a back button that can be used to go back to the previous
  * page. The button also has a context menu, allowing to pop multiple pages at
- * once, potentially across multiple navigation views. In rare scenarios, set
- * [property@HeaderBar:show-back-button] to `FALSE` to disable the back button
- * if it's unwanted (e.g. in an extra header bar on the same page).
+ * once, potentially across multiple navigation views.
+ *
+ * Set [property@HeaderBar:show-back-button] to `FALSE` to disable this behavior
+ * in rare scenarios where it's unwanted.
  *
  * ## Split View Integration
  *
@@ -159,11 +170,11 @@ struct _AdwHeaderBar {
   guint track_default_decoration : 1;
 
   AdwCenteringPolicy centering_policy;
-  gboolean is_mobile_window;
 
   GtkSizeGroup *size_group;
 
   GtkWidget *title_navigation_page;
+  GtkWidget *dialog;
 
   GSList *split_views;
 };
@@ -208,12 +219,61 @@ update_box_visibility (GtkWidget *box)
 }
 
 static void
+update_decoration_layout (AdwHeaderBar *self,
+                          gboolean      start,
+                          gboolean      end)
+{
+  const char *decoration_layout;
+
+  if (self->dialog) {
+    gboolean prefer_start = FALSE;
+
+    if (self->decoration_layout) {
+      prefer_start = adw_decoration_layout_prefers_start (self->decoration_layout);
+    } else {
+      GtkSettings *settings = gtk_widget_get_settings (GTK_WIDGET (self));
+      char *global_layout;
+
+      g_object_get (settings, "gtk-decoration-layout", &global_layout, NULL);
+
+      prefer_start = adw_decoration_layout_prefers_start (global_layout);
+
+      g_free (global_layout);
+    }
+
+    if (prefer_start)
+      decoration_layout = "close:";
+    else
+      decoration_layout = ":close";
+  } else {
+    decoration_layout = self->decoration_layout;
+  }
+
+  if (start && self->start_window_controls) {
+    gtk_window_controls_set_decoration_layout (GTK_WINDOW_CONTROLS (self->start_window_controls),
+                                               decoration_layout);
+  }
+
+  if (end && self->end_window_controls) {
+    gtk_window_controls_set_decoration_layout (GTK_WINDOW_CONTROLS (self->end_window_controls),
+                                               decoration_layout);
+  }
+}
+
+static void
+notify_decoration_layout_cb (AdwHeaderBar *self)
+{
+  if (self->decoration_layout)
+    return;
+
+  update_decoration_layout (self, TRUE, TRUE);
+}
+
+static void
 create_start_window_controls (AdwHeaderBar *self)
 {
   GtkWidget *controls = gtk_window_controls_new (GTK_PACK_START);
-  g_object_bind_property (self, "decoration-layout",
-                          controls, "decoration-layout",
-                          G_BINDING_SYNC_CREATE);
+
   g_object_bind_property (controls, "empty",
                           controls, "visible",
                           G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
@@ -222,15 +282,15 @@ create_start_window_controls (AdwHeaderBar *self)
                             self->start_box);
   gtk_box_prepend (GTK_BOX (self->start_box), controls);
   self->start_window_controls = controls;
+
+  update_decoration_layout (self, TRUE, FALSE);
 }
 
 static void
 create_end_window_controls (AdwHeaderBar *self)
 {
   GtkWidget *controls = gtk_window_controls_new (GTK_PACK_END);
-  g_object_bind_property (self, "decoration-layout",
-                          controls, "decoration-layout",
-                          G_BINDING_SYNC_CREATE);
+
   g_object_bind_property (controls, "empty",
                           controls, "visible",
                           G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
@@ -239,6 +299,8 @@ create_end_window_controls (AdwHeaderBar *self)
                             self->end_box);
   gtk_box_append (GTK_BOX (self->end_box), controls);
   self->end_window_controls = controls;
+
+  update_decoration_layout (self, FALSE, TRUE);
 }
 
 static void
@@ -358,6 +420,9 @@ update_title (AdwHeaderBar *self)
   if (self->title_navigation_page)
     title = adw_navigation_page_get_title (ADW_NAVIGATION_PAGE (self->title_navigation_page));
 
+  if (!title && self->dialog)
+    title = adw_dialog_get_title (ADW_DIALOG (self->dialog));
+
   if (!title) {
     GtkRoot *root = gtk_widget_get_root (GTK_WIDGET (self));
 
@@ -400,15 +465,21 @@ static void
 adw_header_bar_root (GtkWidget *widget)
 {
   AdwHeaderBar *self = ADW_HEADER_BAR (widget);
+  GtkSettings *settings = gtk_widget_get_settings (GTK_WIDGET (self));
   GtkWidget *parent;
 
   GTK_WIDGET_CLASS (adw_header_bar_parent_class)->root (widget);
 
   self->title_navigation_page =
-    adw_widget_get_ancestor_same_native (widget, ADW_TYPE_NAVIGATION_PAGE);
+    adw_widget_get_ancestor (widget, ADW_TYPE_NAVIGATION_PAGE, TRUE, TRUE);
+
+  self->dialog = adw_widget_get_ancestor (widget, ADW_TYPE_DIALOG, TRUE, FALSE);
 
   if (self->title_navigation_page) {
     g_signal_connect_swapped (self->title_navigation_page, "notify::title",
+                              G_CALLBACK (update_title), widget);
+  } else if (self->dialog) {
+    g_signal_connect_swapped (self->dialog, "notify::title",
                               G_CALLBACK (update_title), widget);
   } else {
     GtkRoot *root = gtk_widget_get_root (widget);
@@ -471,25 +542,39 @@ adw_header_bar_root (GtkWidget *widget)
     parent = gtk_widget_get_parent (parent);
   }
 
+  if (self->dialog) {
+    g_signal_connect_swapped (settings, "notify::gtk-decoration-layout",
+                              G_CALLBACK (notify_decoration_layout_cb), self);
+  }
+
   update_title (self);
   update_title_buttons (self);
+  update_decoration_layout (self, TRUE, TRUE);
 }
 
 static void
 adw_header_bar_unroot (GtkWidget *widget)
 {
   AdwHeaderBar *self = ADW_HEADER_BAR (widget);
+  GtkSettings *settings = gtk_widget_get_settings (GTK_WIDGET (self));
   GSList *l;
+
+  if (self->dialog)
+    g_signal_handlers_disconnect_by_func (settings, notify_decoration_layout_cb, self);
 
   if (self->title_navigation_page) {
     g_signal_handlers_disconnect_by_func (self->title_navigation_page,
                                           update_title, widget);
-
-    self->title_navigation_page = NULL;
+  } else if (self->dialog) {
+    g_signal_handlers_disconnect_by_func (self->dialog,
+                                          update_title, widget);
   } else {
     g_signal_handlers_disconnect_by_func (gtk_widget_get_root (widget),
                                           update_title, widget);
   }
+
+  self->title_navigation_page = NULL;
+  self->dialog = NULL;
 
   for (l = self->split_views; l; l = l->next) {
     SplitViewData *data = l->data;
@@ -1130,6 +1215,8 @@ adw_header_bar_set_show_back_button (AdwHeaderBar *self,
       gtk_box_remove (GTK_BOX (self->start_box), self->back_button);
       self->back_button = NULL;
     }
+
+    update_box_visibility (self->start_box);
   }
 
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_SHOW_BACK_BUTTON]);
@@ -1177,6 +1264,8 @@ adw_header_bar_set_decoration_layout (AdwHeaderBar *self,
 
   if (!g_set_str (&self->decoration_layout, layout))
     return;
+
+  update_decoration_layout (self, TRUE, TRUE);
 
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_DECORATION_LAYOUT]);
 }

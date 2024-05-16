@@ -19,7 +19,7 @@
 /**
  * AdwBreakpoint:
  *
- * Describes a breakpoint for [class@Window].
+ * Describes a breakpoint for [class@Window] or [class@Dialog].
  *
  * Breakpoints are used to create adaptive UI, allowing to change the layout
  * depending on available size.
@@ -35,8 +35,8 @@
  * For more complicated scenarios, [signal@Breakpoint::apply] and
  * [signal@Breakpoint::unapply] can be used instead.
  *
- * Breakpoints can be used within [class@Window], [class@ApplicationWindow] or
- * [class@BreakpointBin].
+ * Breakpoints can be used within [class@Window], [class@ApplicationWindow],
+ * [class@Dialog] or [class@BreakpointBin].
  *
  * ## `AdwBreakpoint` as `GtkBuildable`:
  *
@@ -1534,11 +1534,12 @@ adw_breakpoint_set_condition (AdwBreakpoint          *self,
  * applying the breakpoint, and set it back to its original value upon
  * unapplying it.
  *
- * Note that setting properties to their original values does not work for
- * properties that have irreversible side effects. For example, changing
- * [property@Gtk.Button:label] while [property@Gtk.Button:icon-name] is set will
- * reset the icon. However, resetting the label will not set icon-name to its
- * original value.
+ * ::: note
+ *     Setting properties to their original values does not work for properties
+ *     that have irreversible side effects. For example, changing
+ *     [property@Gtk.Button:label] while [property@Gtk.Button:icon-name] is set
+ *     will reset the icon. However, resetting the label will not set
+ *     `icon-name` to its original value.
  *
  * Use the [signal@Breakpoint::apply] and [signal@Breakpoint::unapply] signals
  * for those properties instead, as follows:

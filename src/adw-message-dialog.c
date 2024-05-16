@@ -151,22 +151,6 @@
  * Since: 1.2
  */
 
-/**
- * AdwResponseAppearance:
- * @ADW_RESPONSE_DEFAULT: the default appearance.
- * @ADW_RESPONSE_SUGGESTED: used to denote important responses such as the
- *     affirmative action.
- * @ADW_RESPONSE_DESTRUCTIVE: used to draw attention to the potentially damaging
- *     consequences of using the response. This appearance acts as a warning to
- *     the user.
- *
- * Describes the possible styles of [class@MessageDialog] response buttons.
- *
- * See [method@MessageDialog.set_response_appearance].
- *
- * Since: 1.2
- */
-
 #define DIALOG_MARGIN 30
 #define DIALOG_MAX_WIDTH 550
 #define DIALOG_MIN_WIDTH 300
@@ -1956,6 +1940,53 @@ adw_message_dialog_add_responses (AdwMessageDialog *self,
 }
 
 /**
+ * adw_message_dialog_remove_response:
+ * @self: a message dialog
+ * @id: the response ID
+ *
+ * Removes a response from @self.
+ *
+ * Since: 1.5
+ */
+void
+adw_message_dialog_remove_response (AdwMessageDialog *self,
+                                    const char       *id)
+{
+  AdwMessageDialogPrivate *priv;
+  ResponseInfo *info;
+
+  g_return_if_fail (ADW_IS_MESSAGE_DIALOG (self));
+  g_return_if_fail (id != NULL);
+
+  priv = adw_message_dialog_get_instance_private (self);
+  info = find_response (self, id);
+
+  if (!info) {
+    g_critical ("Trying to remove a response with id '%s' from an "
+                "AdwMessageDialog, but such a response does not exist",
+                id);
+    return;
+  }
+
+  if (priv->default_response == info->id)
+    gtk_window_set_default_widget (GTK_WINDOW (self), NULL);
+
+  gtk_widget_unparent (info->button);
+
+  if (info == priv->responses->data && priv->responses->next) {
+    ResponseInfo *next_info = priv->responses->next->data;
+    g_clear_pointer (&next_info->separator, gtk_widget_unparent);
+  } else {
+    g_clear_pointer (&info->separator, gtk_widget_unparent);
+  }
+
+  priv->responses = g_list_remove (priv->responses, info);
+  g_hash_table_remove (priv->id_to_response, id);
+
+  response_info_free (info);
+}
+
+/**
  * adw_message_dialog_get_response_label:
  * @self: a message dialog
  * @response: a response ID
@@ -2368,7 +2399,7 @@ choose_cancelled_cb (GCancellable *cancellable,
 
 /**
  * adw_message_dialog_choose:
- * @self: (transfer full): a message dialog
+ * @self: a message dialog
  * @cancellable: (nullable): a `GCancellable` to cancel the operation
  * @callback: (scope async): a callback to call when the operation is complete
  * @user_data: (closure callback): data to pass to @callback
