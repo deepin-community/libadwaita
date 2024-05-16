@@ -51,11 +51,19 @@ void adw_widget_compute_expand_horizontal_only (GtkWidget *widget,
 
 GtkSizeRequestMode adw_widget_get_request_mode (GtkWidget *widget);
 
+gboolean adw_widget_contains_passthrough (GtkWidget *widget,
+                                          double     x,
+                                          double     y);
+
 gboolean adw_widget_lookup_color (GtkWidget  *widget,
                                   const char *name,
                                   GdkRGBA    *rgba);
 
-GtkWidget *adw_widget_get_ancestor_same_native (GtkWidget *widget,
-                                                GType      widget_type);
+GtkWidget *adw_widget_get_ancestor (GtkWidget *widget,
+                                    GType      widget_type,
+                                    gboolean   same_native,
+                                    gboolean   same_sheet);
+
+gboolean adw_decoration_layout_prefers_start (const char *layout);
 
 G_END_DECLS

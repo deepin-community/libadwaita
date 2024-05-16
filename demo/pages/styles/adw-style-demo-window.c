@@ -4,16 +4,16 @@
 
 struct _AdwStyleDemoWindow
 {
-  AdwWindow parent_instance;
+  AdwDialog parent_instance;
 
   gboolean progress;
 
-  GtkWindow *status_page_window;
-  GtkWindow *sidebar_window;
+  AdwDialog *status_page_window;
+  AdwDialog *sidebar_window;
   AdwNavigationSplitView *split_view;
 };
 
-G_DEFINE_FINAL_TYPE (AdwStyleDemoWindow, adw_style_demo_window, ADW_TYPE_WINDOW)
+G_DEFINE_FINAL_TYPE (AdwStyleDemoWindow, adw_style_demo_window, ADW_TYPE_DIALOG)
 
 enum {
   PROP_0,
@@ -31,7 +31,7 @@ status_page_cb (GtkWidget  *sender,
 {
   AdwStyleDemoWindow *self = ADW_STYLE_DEMO_WINDOW (sender);
 
-  gtk_window_present (self->status_page_window);
+  adw_dialog_present (self->status_page_window, GTK_WIDGET (self));
 }
 
 static void
@@ -41,7 +41,7 @@ sidebar_cb (GtkWidget  *sender,
 {
   AdwStyleDemoWindow *self = ADW_STYLE_DEMO_WINDOW (sender);
 
-  gtk_window_present (self->sidebar_window);
+  adw_dialog_present (self->sidebar_window, GTK_WIDGET (self));
 }
 
 static void
@@ -51,23 +51,59 @@ dummy_cb (GtkWidget  *sender,
 {
 }
 
+static gboolean
+get_devel_style (AdwStyleDemoWindow *self)
+{
+  GtkRoot *root = gtk_widget_get_root (GTK_WIDGET (self));
+
+  if (!GTK_IS_WIDGET (root))
+    return FALSE;
+
+  return gtk_widget_has_css_class (GTK_WIDGET (root), "devel");
+}
+
 static void
 set_devel_style (AdwStyleDemoWindow *self,
                  gboolean            devel)
 {
-  if (devel) {
-    gtk_widget_add_css_class (GTK_WIDGET (self), "devel");
-    gtk_widget_add_css_class (GTK_WIDGET (self->status_page_window), "devel");
-  } else {
-    gtk_widget_remove_css_class (GTK_WIDGET (self), "devel");
-    gtk_widget_remove_css_class (GTK_WIDGET (self->status_page_window), "devel");
-  }
+  GtkRoot *root = gtk_widget_get_root (GTK_WIDGET (self));
+
+  if (!GTK_IS_WIDGET (root))
+    return;
+
+  if (devel)
+    gtk_widget_add_css_class (GTK_WIDGET (root), "devel");
+  else
+    gtk_widget_remove_css_class (GTK_WIDGET (root), "devel");
 }
 
 static void
 sidebar_forward_cb (AdwStyleDemoWindow *self)
 {
   adw_navigation_split_view_set_show_content (self->split_view, TRUE);
+}
+
+static void
+adw_style_demo_window_root (GtkWidget *widget)
+{
+  AdwStyleDemoWindow *self = ADW_STYLE_DEMO_WINDOW (widget);
+
+  GTK_WIDGET_CLASS (adw_style_demo_window_parent_class)->root (widget);
+
+  if (get_devel_style (self))
+    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_DEVEL]);
+}
+
+static void
+adw_style_demo_window_unroot (GtkWidget *widget)
+{
+  AdwStyleDemoWindow *self = ADW_STYLE_DEMO_WINDOW (widget);
+  gboolean has_devel = get_devel_style (self);
+
+  GTK_WIDGET_CLASS (adw_style_demo_window_parent_class)->unroot (widget);
+
+  if (has_devel)
+    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_DEVEL]);
 }
 
 static void
@@ -80,7 +116,7 @@ adw_style_demo_window_get_property (GObject    *object,
 
   switch (prop_id) {
   case PROP_DEVEL:
-    g_value_set_boolean (value, gtk_widget_has_css_class (GTK_WIDGET (self), "devel"));
+    g_value_set_boolean (value, get_devel_style (self));
     break;
   case PROP_PROGRESS:
     g_value_set_boolean (value, self->progress);
@@ -111,20 +147,6 @@ adw_style_demo_window_set_property (GObject      *object,
 }
 
 static void
-adw_style_demo_window_dispose (GObject *object)
-{
-  AdwStyleDemoWindow *self = ADW_STYLE_DEMO_WINDOW (object);
-
-  if (self->status_page_window)
-    gtk_window_destroy (self->status_page_window);
-
-  if (self->sidebar_window)
-    gtk_window_destroy (self->sidebar_window);
-
-  G_OBJECT_CLASS (adw_style_demo_window_parent_class)->dispose (object);
-}
-
-static void
 adw_style_demo_window_class_init (AdwStyleDemoWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -132,7 +154,8 @@ adw_style_demo_window_class_init (AdwStyleDemoWindowClass *klass)
 
   object_class->get_property = adw_style_demo_window_get_property;
   object_class->set_property = adw_style_demo_window_set_property;
-  object_class->dispose = adw_style_demo_window_dispose;
+  widget_class->root = adw_style_demo_window_root;
+  widget_class->unroot = adw_style_demo_window_unroot;
 
   props[PROP_DEVEL] =
     g_param_spec_boolean ("devel", NULL, NULL,
@@ -157,8 +180,6 @@ adw_style_demo_window_class_init (AdwStyleDemoWindowClass *klass)
   gtk_widget_class_install_action (widget_class, "style.status-page", NULL, status_page_cb);
   gtk_widget_class_install_action (widget_class, "style.sidebar", NULL, sidebar_cb);
   gtk_widget_class_install_action (widget_class, "style.dummy", NULL, dummy_cb);
-
-  gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 static void

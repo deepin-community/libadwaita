@@ -218,12 +218,13 @@ static const LicenseInfo gtk_license_info [] = {
   { N_("GNU Affero General Public License, version 3 only"), "https://www.gnu.org/licenses/agpl-3.0.html", "AGPL-3.0-only" },
   { N_("BSD 3-Clause License"), "https://opensource.org/licenses/BSD-3-Clause", "BSD-3-Clause" },
   { N_("Apache License, Version 2.0"), "https://opensource.org/licenses/Apache-2.0", "Apache-2.0" },
-  { N_("Mozilla Public License 2.0"), "https://opensource.org/licenses/MPL-2.0", "MPL-2.0" }
+  { N_("Mozilla Public License 2.0"), "https://opensource.org/licenses/MPL-2.0", "MPL-2.0" },
+  { N_("BSD Zero-Clause License"), "https://opensource.org/license/0bsd", "0BSD" }
 };
 /* Copied from GTK 4 for consistency with GtkAboutDialog. */
 /* Keep this static assertion updated with the last element of the enumeration,
  * and make sure it matches the last element of the array. */
-G_STATIC_ASSERT (G_N_ELEMENTS (gtk_license_info) - 1 == GTK_LICENSE_MPL_2_0);
+G_STATIC_ASSERT (G_N_ELEMENTS (gtk_license_info) - 1 == GTK_LICENSE_0BSD);
 
 typedef struct {
   char *name;
@@ -293,6 +294,8 @@ struct _AdwAboutWindow {
   GtkLicense license_type;
   GSList *legal_sections;
   gboolean has_custom_links;
+
+  guint legal_showing_idle_id;
 };
 
 G_DEFINE_FINAL_TYPE (AdwAboutWindow, adw_about_window, ADW_TYPE_WINDOW)
@@ -386,6 +389,24 @@ activate_link_default_cb (AdwAboutWindow *self,
   g_object_unref (launcher);
 
   return GDK_EVENT_STOP;
+}
+
+static void
+legal_showing_idle_cb (AdwAboutWindow *self)
+{
+  GtkWidget *focus = gtk_window_get_focus (GTK_WINDOW (self));
+
+  if (GTK_IS_LABEL (focus) && !gtk_label_get_current_uri (GTK_LABEL (focus)))
+    gtk_label_select_region (GTK_LABEL (focus), 0, 0);
+
+  self->legal_showing_idle_id = 0;
+}
+
+static void
+legal_showing_cb (AdwAboutWindow *self)
+{
+  self->legal_showing_idle_id =
+    g_idle_add_once ((GSourceOnceFunc) legal_showing_idle_cb, self);
 }
 
 static gboolean
@@ -1183,6 +1204,16 @@ adw_about_window_set_property (GObject      *object,
 }
 
 static void
+adw_about_window_dispose (GObject *object)
+{
+  AdwAboutWindow *self = ADW_ABOUT_WINDOW (object);
+
+  g_clear_handle_id (&self->legal_showing_idle_id, g_source_remove);
+
+  G_OBJECT_CLASS (adw_about_window_parent_class)->dispose (object);
+}
+
+static void
 adw_about_window_finalize (GObject *object)
 {
   AdwAboutWindow *self = ADW_ABOUT_WINDOW (object);
@@ -1335,6 +1366,7 @@ adw_about_window_class_init (AdwAboutWindowClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+  object_class->dispose = adw_about_window_dispose;
   object_class->finalize = adw_about_window_finalize;
   object_class->get_property = adw_about_window_get_property;
   object_class->set_property = adw_about_window_set_property;
@@ -1842,6 +1874,7 @@ adw_about_window_class_init (AdwAboutWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, AdwAboutWindow, acknowledgements_box);
 
   gtk_widget_class_bind_template_callback (widget_class, activate_link_cb);
+  gtk_widget_class_bind_template_callback (widget_class, legal_showing_cb);
 
   gtk_widget_class_install_action (widget_class, "about.show-url", "s",
                                    (GtkWidgetActionActivateFunc) show_url_cb);
@@ -2004,7 +2037,11 @@ adw_about_window_new_from_appdata (const char *resource_path,
     g_free (appid_desktop);
   }
 
+#if AS_CHECK_VERSION (1, 0, 0)
+  releases = as_release_list_get_entries (as_component_get_releases_plain (component));
+#else
   releases = as_component_get_releases (component);
+#endif
 
   if (release_notes_version) {
     guint release_index = 0;
@@ -2038,11 +2075,16 @@ adw_about_window_new_from_appdata (const char *resource_path,
   }
 
   name = as_component_get_name (component);
-  developer_name = as_component_get_developer_name (component);
   project_license = as_component_get_project_license (component);
   issue_url = as_component_get_url (component, AS_URL_KIND_BUGTRACKER);
   support_url = as_component_get_url (component, AS_URL_KIND_HELP);
   website_url = as_component_get_url (component, AS_URL_KIND_HOMEPAGE);
+
+#if AS_CHECK_VERSION (0, 16, 4)
+  developer_name = as_developer_get_name (as_component_get_developer (component));
+#else
+  developer_name = as_component_get_developer_name (component);
+#endif
 
   adw_about_window_set_application_icon (self, application_id);
 
@@ -3351,7 +3393,7 @@ adw_about_window_add_legal_section (AdwAboutWindow *self,
 }
 
 /**
- * adw_show_about_window:
+ * adw_show_about_window: (skip)
  * @parent: (nullable): the parent top-level window
  * @first_property_name: the name of the first property
  * @...: value of first property, followed by more pairs of property name and
@@ -3382,7 +3424,7 @@ adw_show_about_window (GtkWindow  *parent,
 }
 
 /**
- * adw_show_about_window_from_appdata:
+ * adw_show_about_window_from_appdata: (skip)
  * @parent: (nullable): the parent top-level window
  * @resource_path: The resource to use
  * @release_notes_version: (nullable): The version to retrieve release notes for

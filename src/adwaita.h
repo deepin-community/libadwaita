@@ -10,8 +10,8 @@
 
 G_BEGIN_DECLS
 
-#if !GTK_CHECK_VERSION(4, 11, 3)
-# error "libadwaita requires gtk4 >= 4.11.3"
+#if !GTK_CHECK_VERSION(4, 13, 4)
+# error "libadwaita requires gtk4 >= 4.13.4"
 #endif
 
 #if !GLIB_CHECK_VERSION(2, 76, 0)
@@ -21,8 +21,10 @@ G_BEGIN_DECLS
 #define _ADWAITA_INSIDE
 
 #include "adw-version.h"
+#include "adw-about-dialog.h"
 #include "adw-about-window.h"
 #include "adw-action-row.h"
+#include "adw-alert-dialog.h"
 #include "adw-animation.h"
 #include "adw-animation-target.h"
 #include "adw-animation-util.h"
@@ -41,6 +43,7 @@ G_BEGIN_DECLS
 #include "adw-clamp-layout.h"
 #include "adw-clamp-scrollable.h"
 #include "adw-combo-row.h"
+#include "adw-dialog.h"
 #include "adw-easing.h"
 #include "adw-entry-row.h"
 #include "adw-enum-list-model.h"
@@ -57,6 +60,7 @@ G_BEGIN_DECLS
 #include "adw-navigation-view.h"
 #include "adw-overlay-split-view.h"
 #include "adw-password-entry-row.h"
+#include "adw-preferences-dialog.h"
 #include "adw-preferences-group.h"
 #include "adw-preferences-page.h"
 #include "adw-preferences-row.h"

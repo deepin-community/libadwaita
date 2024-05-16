@@ -15,15 +15,10 @@
 #include "adw-version.h"
 
 #include <gtk/gtk.h>
-#include "adw-enums.h"
+
+#include "adw-alert-dialog.h"
 
 G_BEGIN_DECLS
-
-typedef enum {
-  ADW_RESPONSE_DEFAULT,
-  ADW_RESPONSE_SUGGESTED,
-  ADW_RESPONSE_DESTRUCTIVE,
-} AdwResponseAppearance;
 
 #define ADW_TYPE_MESSAGE_DIALOG (adw_message_dialog_get_type())
 
@@ -100,6 +95,10 @@ ADW_AVAILABLE_IN_1_2
 void adw_message_dialog_add_response (AdwMessageDialog *self,
                                       const char       *id,
                                       const char       *label);
+
+ADW_AVAILABLE_IN_1_5
+void adw_message_dialog_remove_response (AdwMessageDialog *self,
+                                         const char       *id);
 
 ADW_AVAILABLE_IN_1_2
 void adw_message_dialog_add_responses (AdwMessageDialog *self,

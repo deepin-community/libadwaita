@@ -22,4 +22,3 @@ override_dh_auto_test:
 	xvfb-run -s -noreset dh_auto_test
 
 override_dh_gnome_clean:
-	dh_gnome_clean --no-control

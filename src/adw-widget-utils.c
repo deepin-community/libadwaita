@@ -17,6 +17,9 @@
 
 #include "adw-widget-utils-private.h"
 
+#include "adw-bottom-sheet-private.h"
+#include "adw-floating-sheet-private.h"
+
 typedef struct _CompareInfo CompareInfo;
 
 enum Axis {
@@ -546,6 +549,14 @@ adw_widget_get_request_mode (GtkWidget *widget)
         GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH;
 }
 
+gboolean
+adw_widget_contains_passthrough (GtkWidget *widget,
+                                 double     x,
+                                 double     y)
+{
+  return FALSE;
+}
+
 /* FIXME: Replace this with public color API and make public */
 gboolean
 adw_widget_lookup_color (GtkWidget  *widget,
@@ -560,15 +571,53 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 GtkWidget *
-adw_widget_get_ancestor_same_native (GtkWidget *widget,
-                                     GType      widget_type)
+adw_widget_get_ancestor (GtkWidget *widget,
+                         GType      widget_type,
+                         gboolean   same_native,
+                         gboolean   same_sheet)
 {
   while (widget && !g_type_is_a (G_OBJECT_TYPE (widget), widget_type)) {
-    if (GTK_IS_NATIVE (widget))
+    if (same_native && GTK_IS_NATIVE (widget))
+      return NULL;
+
+    if (same_sheet && (ADW_IS_FLOATING_SHEET (widget) || ADW_IS_BOTTOM_SHEET (widget)))
       return NULL;
 
     widget = gtk_widget_get_parent (widget);
   }
 
   return widget;
+}
+
+gboolean
+adw_decoration_layout_prefers_start (const char *layout)
+{
+  int counts[2];
+  char **sides;
+  int i;
+
+  sides = g_strsplit (layout, ":", 2);
+
+  for (i = 0; i < 2; i++) {
+    char **elements;
+    int j;
+
+    counts[i] = 0;
+
+    if (sides[i] == NULL)
+      continue;
+
+    elements = g_strsplit (sides[i], ",", -1);
+
+    for (j = 0; elements[j]; j++) {
+      if (!g_strcmp0 (elements[j], "close"))
+        counts[i]++;
+    }
+
+    g_strfreev (elements);
+  }
+
+  g_strfreev (sides);
+
+  return counts[0] > counts[1];
 }

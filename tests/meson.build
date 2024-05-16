@@ -32,8 +32,10 @@ if cc.get_argument_syntax() != 'msvc'
 endif
 
 test_names = [
+  'test-about-dialog',
   'test-about-window',
   'test-action-row',
+  'test-alert-dialog',
   'test-animation',
   'test-animation-target',
   'test-application-window',
@@ -47,6 +49,7 @@ test_names = [
   'test-carousel-indicator-dots',
   'test-carousel-indicator-lines',
   'test-combo-row',
+  'test-dialog',
   'test-easing',
   'test-entry-row',
   'test-expander-row',
@@ -58,6 +61,7 @@ test_names = [
   'test-navigation-view',
   'test-overlay-split-view',
   'test-password-entry-row',
+  'test-preferences-dialog',
   'test-preferences-group',
   'test-preferences-page',
   'test-preferences-row',

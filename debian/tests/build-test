@@ -2,6 +2,9 @@
 set -eu
 
 export GTK_A11Y=none
+# Avoid ZINK stderr from mesa
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/10293
+export LIBGL_ALWAYS_SOFTWARE=true
 
 if [ -n "${DEB_HOST_GNU_TYPE:-}" ]; then
     CROSS_COMPILE="$DEB_HOST_GNU_TYPE-"

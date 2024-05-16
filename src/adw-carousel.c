@@ -1013,8 +1013,10 @@ adw_carousel_class_init (AdwCarouselClass *klass)
    * This signal is emitted after a page has been changed.
    *
    * It can be used to implement "infinite scrolling" by amending the pages
-   * after every scroll. Note that an empty carousel is indicated by
-   * `(int)index == -1`.
+   * after every scroll.
+   *
+   * ::: note
+   *     An empty carousel is indicated by `(int)index == -1`.
    */
   signals[SIGNAL_PAGE_CHANGED] =
     g_signal_new ("page-changed",
@@ -1336,6 +1338,7 @@ adw_carousel_reorder (AdwCarousel *self,
            (G_APPROX_VALUE (closest_point, old_point, DBL_EPSILON) || closest_point > old_point))
     self->position_shift -= info->size;
 
+  self->is_being_allocated = TRUE;
   gtk_widget_queue_allocate (GTK_WIDGET (self));
 }
 

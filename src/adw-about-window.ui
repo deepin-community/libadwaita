@@ -483,7 +483,7 @@
                         <child type="end">
                           <object class="GtkButton">
                             <property name="action-name">about.save-debug-info</property>
-                            <property name="label" translatable="yes">_Save as…</property>
+                            <property name="label" translatable="yes">_Save As…</property>
                             <property name="use-underline">True</property>
                             <property name="can-shrink">True</property>
                           </object>
@@ -529,6 +529,7 @@
               <object class="AdwNavigationPage">
                 <property name="title" translatable="yes">Legal</property>
                 <property name="tag">legal</property>
+                <signal name="showing" handler="legal_showing_cb" swapped="yes"/>
                 <property name="child">
                   <object class="AdwToolbarView">
                     <child type="top">

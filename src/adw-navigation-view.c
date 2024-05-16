@@ -66,7 +66,7 @@
  * at once, potentially across multiple navigation views.
  *
  * Set [property@HeaderBar:show-back-button] to `FALSE` to disable this behavior
- * if it's unwanted.
+ * in rare scenarios where it's unwanted.
  *
  * `AdwHeaderBar` will also display the title of the `AdwNavigationPage` it's
  * placed into, so most applications shouldn't need to customize it at all.
@@ -227,6 +227,8 @@ typedef struct
   int block_signals;
 
   AdwNavigationView *child_view;
+
+  int nav_split_views;
 } AdwNavigationPagePrivate;
 
 static void adw_navigation_page_buildable_init (GtkBuildableIface *iface);
@@ -403,8 +405,8 @@ adw_navigation_page_realize (GtkWidget *widget)
 
   GTK_WIDGET_CLASS (adw_navigation_page_parent_class)->realize (widget);
 
-  if (!(priv->title && *priv->title) && !priv->child_view) {
-    g_warning ("AdwNavigationPage %p is missing a title. To hide a header bar" \
+  if (!(priv->title && *priv->title) && !priv->child_view && priv->nav_split_views == 0) {
+    g_warning ("AdwNavigationPage %p is missing a title. To hide a header bar " \
                "title, consider using AdwHeaderBar:show-title instead.", self);
   }
 }
@@ -1571,7 +1573,7 @@ adw_navigation_view_root (GtkWidget *widget)
 
   GTK_WIDGET_CLASS (adw_navigation_view_parent_class)->root (widget);
 
-  parent_page = adw_widget_get_ancestor_same_native (widget, ADW_TYPE_NAVIGATION_PAGE);
+  parent_page = adw_widget_get_ancestor (widget, ADW_TYPE_NAVIGATION_PAGE, TRUE, TRUE);
 
   if (parent_page)
     set_child_view (ADW_NAVIGATION_PAGE (parent_page), self);
@@ -1582,7 +1584,7 @@ adw_navigation_view_unroot (GtkWidget *widget)
 {
   GtkWidget *parent_page;
 
-  parent_page = adw_widget_get_ancestor_same_native (widget, ADW_TYPE_NAVIGATION_PAGE);
+  parent_page = adw_widget_get_ancestor (widget, ADW_TYPE_NAVIGATION_PAGE, TRUE, TRUE);
 
   if (parent_page)
     set_child_view (ADW_NAVIGATION_PAGE (parent_page), NULL);
@@ -2428,6 +2430,26 @@ adw_navigation_page_unblock_signals (AdwNavigationPage *self)
   priv->block_signals--;
 }
 
+void
+adw_navigation_page_add_child_nav_split_view (AdwNavigationPage *self)
+{
+  AdwNavigationPagePrivate *priv = adw_navigation_page_get_instance_private (self);
+
+  g_return_if_fail (ADW_IS_NAVIGATION_PAGE (self));
+
+  priv->nav_split_views++;
+}
+
+void
+adw_navigation_page_remove_child_nav_split_view (AdwNavigationPage *self)
+{
+  AdwNavigationPagePrivate *priv = adw_navigation_page_get_instance_private (self);
+
+  g_return_if_fail (ADW_IS_NAVIGATION_PAGE (self));
+
+  priv->nav_split_views--;
+}
+
 /**
  * adw_navigation_view_new:
  *
@@ -2535,7 +2557,7 @@ adw_navigation_view_find_page (AdwNavigationView *self,
  * If [method@NavigationView.add] hasn't been called, the page is automatically
  * removed once it's popped.
  *
- * [signal@NavigationView::popped] will be emitted for @page.
+ * [signal@NavigationView::pushed] will be emitted for @page.
  *
  * See [method@NavigationView.push_by_tag].
  *
@@ -2564,7 +2586,7 @@ adw_navigation_view_push (AdwNavigationView *self,
  * If [method@NavigationView.add] hasn't been called, the page is automatically
  * removed once it's popped.
  *
- * [signal@NavigationView::popped] will be emitted for pushed page.
+ * [signal@NavigationView::pushed] will be emitted for the page.
  *
  * See [method@NavigationView.push] and [property@NavigationPage:tag].
  *
