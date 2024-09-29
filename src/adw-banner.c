@@ -351,7 +351,7 @@ adw_banner_class_init (AdwBannerClass *klass)
   object_class->dispose = adw_banner_dispose;
 
   /**
-   * AdwBanner:title: (attributes org.gtk.Property.get=adw_banner_get_title org.gtk.Property.set=adw_banner_set_title)
+   * AdwBanner:title:
    *
    * The title for this banner.
    *
@@ -365,7 +365,7 @@ adw_banner_class_init (AdwBannerClass *klass)
                            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwBanner:button-label: (attributes org.gtk.Property.get=adw_banner_get_button_label org.gtk.Property.set=adw_banner_set_button_label)
+   * AdwBanner:button-label:
    *
    * The label to show on the button.
    *
@@ -382,7 +382,7 @@ adw_banner_class_init (AdwBannerClass *klass)
                            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwBanner:use-markup: (attributes org.gtk.Property.get=adw_banner_get_use_markup org.gtk.Property.set=adw_banner_set_use_markup)
+   * AdwBanner:use-markup:
    *
    * Whether to use Pango markup for the banner title.
    *
@@ -396,7 +396,7 @@ adw_banner_class_init (AdwBannerClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwBanner:revealed: (attributes org.gtk.Property.get=adw_banner_get_revealed org.gtk.Property.set=adw_banner_set_revealed)
+   * AdwBanner:revealed:
    *
    * Whether the banner is currently revealed.
    *
@@ -525,7 +525,7 @@ adw_banner_new (const char *title)
 }
 
 /**
- * adw_banner_get_title: (attributes org.gtk.Method.get_property=title)
+ * adw_banner_get_title:
  * @self: a banner
  *
  * Gets the title for @self.
@@ -543,7 +543,7 @@ adw_banner_get_title (AdwBanner *self)
 }
 
 /**
- * adw_banner_set_title: (attributes org.gtk.Method.set_property=title)
+ * adw_banner_set_title:
  * @self: a banner
  * @title: the title
  *
@@ -569,7 +569,7 @@ adw_banner_set_title (AdwBanner  *self,
 }
 
 /**
- * adw_banner_get_button_label: (attributes org.gtk.Method.get_property=button-label)
+ * adw_banner_get_button_label:
  * @self: a banner
  *
  * Gets the button label for @self.
@@ -587,7 +587,7 @@ adw_banner_get_button_label (AdwBanner *self)
 }
 
 /**
- * adw_banner_set_button_label: (attributes org.gtk.Method.set_property=button-label)
+ * adw_banner_set_button_label:
  * @self: a banner
  * @label: (nullable): the label
  *
@@ -617,7 +617,7 @@ adw_banner_set_button_label (AdwBanner  *self,
 }
 
 /**
- * adw_banner_get_use_markup: (attributes org.gtk.Method.get_property=use-markup)
+ * adw_banner_get_use_markup:
  * @self: a banner
  *
  * Gets whether to use Pango markup for the banner title.
@@ -635,7 +635,7 @@ adw_banner_get_use_markup (AdwBanner *self)
 }
 
 /**
- * adw_banner_set_use_markup: (attributes org.gtk.Method.set_property=use-markup)
+ * adw_banner_set_use_markup:
  * @self: a banner
  * @use_markup: whether to use markup
  *
@@ -662,7 +662,7 @@ adw_banner_set_use_markup (AdwBanner *self,
 }
 
 /**
- * adw_banner_get_revealed: (attributes org.gtk.Method.get_property=revealed)
+ * adw_banner_get_revealed:
  * @self: a banner
  *
  * Gets if a banner is revealed
@@ -680,7 +680,7 @@ adw_banner_get_revealed (AdwBanner *self)
 }
 
 /**
- * adw_banner_set_revealed: (attributes org.gtk.Method.get_property=revealed)
+ * adw_banner_set_revealed:
  * @self: a banner
  * @revealed: whether a banner should be revealed
  *

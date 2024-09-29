@@ -418,13 +418,7 @@ adw_navigation_page_dispose (GObject *object)
   AdwNavigationPagePrivate *priv = adw_navigation_page_get_instance_private (self);
 
   g_clear_pointer (&priv->child, gtk_widget_unparent);
-
-  if (priv->child_view) {
-    g_object_remove_weak_pointer (G_OBJECT (priv->child_view),
-                                  (gpointer *) &priv->child_view);
-
-    priv->child_view = NULL;
-  }
+  g_clear_weak_pointer (&priv->child_view);
 
   G_OBJECT_CLASS (adw_navigation_page_parent_class)->dispose (object);
 }
@@ -437,10 +431,7 @@ adw_navigation_page_finalize (GObject *object)
 
   g_free (priv->title);
   g_free (priv->tag);
-
-  if (priv->last_focus)
-    g_object_remove_weak_pointer (G_OBJECT (priv->last_focus),
-                                  (gpointer *) &priv->last_focus);
+  g_clear_weak_pointer (&priv->last_focus);
 
   G_OBJECT_CLASS (adw_navigation_page_parent_class)->finalize (object);
 }
@@ -512,7 +503,7 @@ adw_navigation_page_class_init (AdwNavigationPageClass *klass)
   widget_class->compute_expand = adw_widget_compute_expand;
 
   /**
-   * AdwNavigationPage:child: (attributes org.gtk.Property.get=adw_navigation_page_get_child org.gtk.Property.set=adw_navigation_page_set_child)
+   * AdwNavigationPage:child:
    *
    * The child widget.
    *
@@ -524,7 +515,7 @@ adw_navigation_page_class_init (AdwNavigationPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwNavigationPage:tag: (attributes org.gtk.Property.get=adw_navigation_page_get_tag org.gtk.Property.set=adw_navigation_page_set_tag)
+   * AdwNavigationPage:tag:
    *
    * The page tag.
    *
@@ -545,7 +536,7 @@ adw_navigation_page_class_init (AdwNavigationPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwNavigationPage:title: (attributes org.gtk.Property.get=adw_navigation_page_get_title org.gtk.Property.set=adw_navigation_page_set_title)
+   * AdwNavigationPage:title:
    *
    * The page title.
    *
@@ -560,7 +551,7 @@ adw_navigation_page_class_init (AdwNavigationPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwNavigationPage:can-pop: (attributes org.gtk.Property.get=adw_navigation_page_get_can_pop org.gtk.Property.set=adw_navigation_page_set_can_pop)
+   * AdwNavigationPage:can-pop:
    *
    * Whether the page can be popped from navigation stack.
    *
@@ -746,12 +737,7 @@ switch_page (AdwNavigationView *self,
 
     contains_focus = TRUE;
 
-    if (priv->last_focus)
-      g_object_remove_weak_pointer (G_OBJECT (priv->last_focus),
-                                    (gpointer *)&priv->last_focus);
-    priv->last_focus = focus;
-    g_object_add_weak_pointer (G_OBJECT (priv->last_focus),
-                               (gpointer *)&priv->last_focus);
+    g_set_weak_pointer (&priv->last_focus, focus);
   }
 
   if (!prev_page)
@@ -1357,20 +1343,7 @@ set_child_view (AdwNavigationPage *self,
 {
   AdwNavigationPagePrivate *priv = adw_navigation_page_get_instance_private (self);
 
-  if (view == priv->child_view)
-    return;
-
-  if (priv->child_view) {
-    g_object_remove_weak_pointer (G_OBJECT (priv->child_view),
-                                  (gpointer *) &priv->child_view);
-  }
-
-  priv->child_view = view;
-
-  if (priv->child_view) {
-    g_object_add_weak_pointer (G_OBJECT (priv->child_view),
-                               (gpointer *) &priv->child_view);
-  }
+  g_set_weak_pointer (&priv->child_view, view);
 }
 
 static void
@@ -1632,9 +1605,7 @@ adw_navigation_view_finalize (GObject *object)
 {
   AdwNavigationView *self = ADW_NAVIGATION_VIEW (object);
 
-  if (self->navigation_stack_model)
-    g_object_remove_weak_pointer (G_OBJECT (self->navigation_stack_model),
-                                  (gpointer *) &self->navigation_stack_model);
+  g_clear_weak_pointer (&self->navigation_stack_model);
 
   G_OBJECT_CLASS (adw_navigation_view_parent_class)->finalize (object);
 }
@@ -1719,7 +1690,7 @@ adw_navigation_view_class_init (AdwNavigationViewClass *klass)
   widget_class->compute_expand = adw_widget_compute_expand;
 
   /**
-   * AdwNavigationView:visible-page: (attributes org.gtk.Property.get=adw_navigation_view_get_visible_page)
+   * AdwNavigationView:visible-page:
    *
    * The currently visible page.
    *
@@ -1731,7 +1702,7 @@ adw_navigation_view_class_init (AdwNavigationViewClass *klass)
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * AdwNavigationView:animate-transitions: (attributes org.gtk.Property.get=adw_navigation_view_get_animate_transitions org.gtk.Property.set=adw_navigation_view_set_animate_transitions)
+   * AdwNavigationView:animate-transitions:
    *
    * Whether to animate page transitions.
    *
@@ -1745,7 +1716,7 @@ adw_navigation_view_class_init (AdwNavigationViewClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwNavigationView:pop-on-escape: (attributes org.gtk.Property.get=adw_navigation_view_get_pop_on_escape org.gtk.Property.set=adw_navigation_view_set_pop_on_escape)
+   * AdwNavigationView:pop-on-escape:
    *
    * Whether pressing Escape pops the current page.
    *
@@ -1760,7 +1731,7 @@ adw_navigation_view_class_init (AdwNavigationViewClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwNavigationView:navigation-stack: (attributes org.gtk.Property.get=adw_navigation_view_get_navigation_stack)
+   * AdwNavigationView:navigation-stack:
    *
    * A list model that contains the pages in navigation stack.
    *
@@ -2097,7 +2068,7 @@ adw_navigation_page_new_with_tag (GtkWidget  *child,
 }
 
 /**
- * adw_navigation_page_get_child: (attributes org.gtk.Method.get_property=child)
+ * adw_navigation_page_get_child:
  * @self: a navigation page
  *
  * Gets the child widget of @self.
@@ -2119,7 +2090,7 @@ adw_navigation_page_get_child (AdwNavigationPage *self)
 }
 
 /**
- * adw_navigation_page_set_child: (attributes org.gtk.Method.set_property=child)
+ * adw_navigation_page_set_child:
  * @self: a navigation page
  * @child: (nullable): the child widget
  *
@@ -2160,7 +2131,7 @@ adw_navigation_page_set_child (AdwNavigationPage *self,
 }
 
 /**
- * adw_navigation_page_get_tag: (attributes org.gtk.Method.get_property=tag)
+ * adw_navigation_page_get_tag:
  * @self: a navigation page
  *
  * Gets the tag of @self.
@@ -2182,7 +2153,7 @@ adw_navigation_page_get_tag (AdwNavigationPage *self)
 }
 
 /**
- * adw_navigation_page_set_tag: (attributes org.gtk.Method.set_property=tag)
+ * adw_navigation_page_set_tag:
  * @self: a navigation page
  * @tag: (nullable): the page tag
  *
@@ -2238,7 +2209,7 @@ adw_navigation_page_set_tag (AdwNavigationPage *self,
 }
 
 /**
- * adw_navigation_page_get_title: (attributes org.gtk.Method.get_property=title)
+ * adw_navigation_page_get_title:
  * @self: a navigation page
  *
  * Gets the title of @self.
@@ -2260,7 +2231,7 @@ adw_navigation_page_get_title (AdwNavigationPage *self)
 }
 
 /**
- * adw_navigation_page_set_title: (attributes org.gtk.Method.set_property=title)
+ * adw_navigation_page_set_title:
  * @self: a navigation page
  * @title: the title
  *
@@ -2293,7 +2264,7 @@ adw_navigation_page_set_title (AdwNavigationPage *self,
 }
 
 /**
- * adw_navigation_page_get_can_pop: (attributes org.gtk.Method.get_property=can-pop)
+ * adw_navigation_page_get_can_pop:
  * @self: a navigation page
  *
  * Gets whether @self can be popped from navigation stack.
@@ -2315,7 +2286,7 @@ adw_navigation_page_get_can_pop (AdwNavigationPage *self)
 }
 
 /**
- * adw_navigation_page_set_can_pop: (attributes org.gtk.Method.set_property=can-pop)
+ * adw_navigation_page_set_can_pop:
  * @self: a navigation page
  * @can_pop: whether the page can be popped from navigation stack
  *
@@ -2913,7 +2884,7 @@ adw_navigation_view_replace_with_tags (AdwNavigationView  *self,
 }
 
 /**
- * adw_navigation_view_get_visible_page: (attributes org.gtk.Method.get_property=visible-page)
+ * adw_navigation_view_get_visible_page:
  * @self: a navigation view
  *
  * Gets the currently visible page in @self.
@@ -2982,7 +2953,7 @@ adw_navigation_view_get_previous_page (AdwNavigationView *self,
 }
 
 /**
- * adw_navigation_view_get_animate_transitions: (attributes org.gtk.Method.get_property=animate-transitions)
+ * adw_navigation_view_get_animate_transitions:
  * @self: a navigation view
  *
  * Gets whether @self animates page transitions.
@@ -3000,7 +2971,7 @@ adw_navigation_view_get_animate_transitions (AdwNavigationView *self)
 }
 
 /**
- * adw_navigation_view_set_animate_transitions: (attributes org.gtk.Method.set_property=animate-transitions)
+ * adw_navigation_view_set_animate_transitions:
  * @self: a navigation view
  * @animate_transitions: whether to animate page transitions
  *
@@ -3027,7 +2998,7 @@ adw_navigation_view_set_animate_transitions (AdwNavigationView *self,
 }
 
 /**
- * adw_navigation_view_get_pop_on_escape: (attributes org.gtk.Method.get_property=pop-on-escape)
+ * adw_navigation_view_get_pop_on_escape:
  * @self: a navigation view
  *
  * Gets whether pressing Escape pops the current page on @self.
@@ -3045,7 +3016,7 @@ adw_navigation_view_get_pop_on_escape (AdwNavigationView *self)
 }
 
 /**
- * adw_navigation_view_set_pop_on_escape: (attributes org.gtk.Method.set_property=pop-on-escape)
+ * adw_navigation_view_set_pop_on_escape:
  * @self: a navigation view
  * @pop_on_escape: whether to pop the current page when pressing Escape
  *
@@ -3073,7 +3044,7 @@ adw_navigation_view_set_pop_on_escape (AdwNavigationView *self,
 }
 
 /**
- * adw_navigation_view_get_navigation_stack: (attributes org.gtk.Method.get_property=navigation-stack)
+ * adw_navigation_view_get_navigation_stack:
  * @self: a navigation view
  *
  * Returns a [iface@Gio.ListModel] that contains the pages in navigation stack.
@@ -3094,9 +3065,8 @@ adw_navigation_view_get_navigation_stack (AdwNavigationView *self)
   if (self->navigation_stack_model)
     return g_object_ref (self->navigation_stack_model);
 
-  self->navigation_stack_model = adw_navigation_view_model_new (self);
-  g_object_add_weak_pointer (G_OBJECT (self->navigation_stack_model),
-                             (gpointer *) &self->navigation_stack_model);
+  g_set_weak_pointer (&self->navigation_stack_model,
+                      adw_navigation_view_model_new (self));
 
   return self->navigation_stack_model;
 }

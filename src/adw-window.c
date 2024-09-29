@@ -61,8 +61,6 @@
  *
  * ```xml
  * <object class="AdwWindow">
- *   <property name="width-request">360</property>
- *   <property name="height-request">200</property>
  *   <property name="content">
  *     <object class="AdwToolbarView">
  *       <child type="top">
@@ -88,9 +86,11 @@
  * </object>
  * ```
  *
- * Like `AdwBreakpointBin`, if breakpoints are used, `AdwWindow` doesn't have a
- * minimum size, and [property@Gtk.Widget:width-request] and
- * [property@Gtk.Widget:height-request] properties must be set manually.
+ * When breakpoints are used, the minimum size must be larger than the smallest
+ * UI state. `AdwWindow` defaults to the minimum size of 360×200 px. If that's
+ * too small, set the [property@Gtk.Widget:width-request] and
+ * [property@Gtk.Widget:height-request] properties manually.
+ *
  */
 
 typedef struct
@@ -207,7 +207,7 @@ adw_window_class_init (AdwWindowClass *klass)
   widget_class->size_allocate = adw_window_size_allocate;
 
   /**
-   * AdwWindow:content: (attributes org.gtk.Property.get=adw_window_get_content org.gtk.Property.set=adw_window_set_content)
+   * AdwWindow:content:
    *
    * The content widget.
    *
@@ -219,7 +219,7 @@ adw_window_class_init (AdwWindowClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwWindow:current-breakpoint: (attributes org.gtk.Property.get=adw_window_get_current_breakpoint)
+   * AdwWindow:current-breakpoint:
    *
    * The current breakpoint.
    *
@@ -231,7 +231,7 @@ adw_window_class_init (AdwWindowClass *klass)
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * AdwWindow:dialogs: (attributes org.gtk.Property.get=adw_window_get_dialogs)
+   * AdwWindow:dialogs:
    *
    * The open dialogs.
    *
@@ -243,7 +243,7 @@ adw_window_class_init (AdwWindowClass *klass)
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * AdwWindow:visible-dialog: (attributes org.gtk.Property.get=adw_window_get_visible_dialog)
+   * AdwWindow:visible-dialog:
    *
    * The currently visible dialog
    *
@@ -280,6 +280,8 @@ adw_window_init (AdwWindow *self)
                             G_CALLBACK (notify_current_breakpoint_cb), self);
   g_signal_connect_swapped (priv->dialog_host, "notify::visible-dialog",
                             G_CALLBACK (notify_visible_dialog_cb), self);
+
+  gtk_widget_set_size_request (GTK_WIDGET (self), 360, 200);
 }
 
 static void
@@ -321,7 +323,7 @@ adw_window_new (void)
 }
 
 /**
- * adw_window_set_content: (attributes org.gtk.Method.set_property=content)
+ * adw_window_set_content:
  * @self: a window
  * @content: (nullable): the content widget
  *
@@ -352,7 +354,7 @@ adw_window_set_content (AdwWindow *self,
 }
 
 /**
- * adw_window_get_content: (attributes org.gtk.Method.get_property=content)
+ * adw_window_get_content:
  * @self: a window
  *
  * Gets the content widget of @self.
@@ -397,7 +399,7 @@ adw_window_add_breakpoint (AdwWindow     *self,
 }
 
 /**
- * adw_window_get_current_breakpoint: (attributes org.gtk.Method.get_property=current-breakpoint)
+ * adw_window_get_current_breakpoint:
  * @self: a window
  *
  * Gets the current breakpoint.
@@ -419,7 +421,7 @@ adw_window_get_current_breakpoint (AdwWindow *self)
 }
 
 /**
- * adw_window_get_dialogs: (attributes org.gtk.Method.get_property=dialogs)
+ * adw_window_get_dialogs:
  * @self: a window
  *
  * Returns a [iface@Gio.ListModel] that contains the open dialogs of @self.
@@ -443,7 +445,7 @@ adw_window_get_dialogs (AdwWindow *self)
 }
 
 /**
- * adw_window_get_visible_dialog: (attributes org.gtk.Method.get_property=visible-dialog)
+ * adw_window_get_visible_dialog:
  * @self: a window
  *
  * Returns the currently visible dialog in @self, if there's one.

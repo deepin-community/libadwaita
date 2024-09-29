@@ -11,6 +11,7 @@ libadwaita_resources = gnome.compile_resources(
 )
 
 adw_public_enum_headers = [
+  'adw-accent-color.h',
   'adw-alert-dialog.h',
   'adw-animation.h',
   'adw-banner.h',
@@ -98,6 +99,7 @@ libadwaita_private_sources += adw_marshalers
 src_headers = [
   'adw-about-dialog.h',
   'adw-about-window.h',
+  'adw-accent-color.h',
   'adw-action-row.h',
   'adw-alert-dialog.h',
   'adw-animation.h',
@@ -108,9 +110,11 @@ src_headers = [
   'adw-avatar.h',
   'adw-banner.h',
   'adw-bin.h',
+  'adw-bottom-sheet.h',
   'adw-breakpoint.h',
   'adw-breakpoint-bin.h',
   'adw-button-content.h',
+  'adw-button-row.h',
   'adw-carousel.h',
   'adw-carousel-indicator-dots.h',
   'adw-carousel-indicator-lines.h',
@@ -126,10 +130,13 @@ src_headers = [
   'adw-flap.h',
   'adw-fold-threshold-policy.h',
   'adw-header-bar.h',
+  'adw-layout.h',
+  'adw-layout-slot.h',
   'adw-leaflet.h',
   'adw-length-unit.h',
   'adw-main.h',
   'adw-message-dialog.h',
+  'adw-multi-layout-view.h',
   'adw-navigation-direction.h',
   'adw-navigation-split-view.h',
   'adw-navigation-view.h',
@@ -141,6 +148,8 @@ src_headers = [
   'adw-preferences-row.h',
   'adw-preferences-window.h',
   'adw-spin-row.h',
+  'adw-spinner.h',
+  'adw-spinner-paintable.h',
   'adw-split-button.h',
   'adw-spring-animation.h',
   'adw-spring-params.h',
@@ -178,6 +187,7 @@ libadwaita_init_public_types = custom_target('adw-public-types.c',
 src_sources = [
   'adw-about-dialog.c',
   'adw-about-window.c',
+  'adw-accent-color.c',
   'adw-action-row.c',
   'adw-alert-dialog.c',
   'adw-animation.c',
@@ -188,9 +198,11 @@ src_sources = [
   'adw-avatar.c',
   'adw-banner.c',
   'adw-bin.c',
+  'adw-bottom-sheet.c',
   'adw-breakpoint.c',
   'adw-breakpoint-bin.c',
   'adw-button-content.c',
+  'adw-button-row.c',
   'adw-carousel.c',
   'adw-carousel-indicator-dots.c',
   'adw-carousel-indicator-lines.c',
@@ -206,10 +218,13 @@ src_sources = [
   'adw-flap.c',
   'adw-fold-threshold-policy.c',
   'adw-header-bar.c',
+  'adw-layout.c',
+  'adw-layout-slot.c',
   'adw-leaflet.c',
   'adw-length-unit.c',
   'adw-main.c',
   'adw-message-dialog.c',
+  'adw-multi-layout-view.c',
   'adw-navigation-direction.c',
   'adw-navigation-split-view.c',
   'adw-navigation-view.c',
@@ -221,6 +236,8 @@ src_sources = [
   'adw-preferences-row.c',
   'adw-preferences-window.c',
   'adw-spin-row.c',
+  'adw-spinner.c',
+  'adw-spinner-paintable.c',
   'adw-split-button.c',
   'adw-spring-animation.c',
   'adw-spring-params.c',
@@ -252,6 +269,7 @@ libadwaita_private_sources += files([
   'adw-back-button.c',
   'adw-bidi.c',
   'adw-bottom-sheet.c',
+  'adw-color-utils.c',
   'adw-dialog-host.c',
   'adw-fading-label.c',
   'adw-floating-sheet.c',
@@ -263,6 +281,7 @@ libadwaita_private_sources += files([
   'adw-settings-impl.c',
   'adw-settings-impl-gsettings.c',
   'adw-settings-impl-legacy.c',
+  'adw-sheet-controls.c',
   'adw-shadow-helper.c',
   'adw-tab.c',
   'adw-tab-box.c',
@@ -279,7 +298,7 @@ libadwaita_public_sources += files(src_sources)
 install_headers(src_headers, subdir: libadwaita_header_subdir)
 
 glib_min_version = '>= 2.76.0'
-gtk_min_version = '>= 4.13.4'
+gtk_min_version = '>= 4.15.2'
 
 gio_dep = dependency('gio-2.0', version: glib_min_version)
 gtk_dep = dependency('gtk4', version: gtk_min_version)
@@ -380,7 +399,6 @@ endif
 libadwaita = library(
   'adwaita-' + apiversion,
   libadwaita_sources,
-
               soversion: soversion,
                  c_args: libadwaita_c_args,
            dependencies: libadwaita_deps,
@@ -397,6 +415,28 @@ libadwaita_dep = declare_dependency(
             link_with: libadwaita,
   include_directories: include_directories('.'),
 )
+
+if get_option('tests')
+  libadwaita_internal = library(
+    'adwaita-' + apiversion + '-internal',
+    libadwaita_sources,
+
+                soversion: soversion,
+                   c_args: libadwaita_c_args,
+             dependencies: libadwaita_deps,
+      include_directories: [ root_inc, src_inc ],
+                  install: true,
+                link_args: libadwaita_link_args,
+              install_dir: adwaita_libdir,
+  )
+
+  libadwaita_internal_dep = declare_dependency(
+                sources: libadwaita_generated_headers,
+           dependencies: libadwaita_public_deps,
+              link_with: libadwaita_internal,
+    include_directories: include_directories('.'),
+  )
+endif
 
 meson.override_dependency(package_api_name, libadwaita_dep)
 

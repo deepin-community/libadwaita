@@ -1,5 +1,3 @@
-$osd_scrollbar_outline_color: transparentize(black, .5);
-
 scrollbar {
   $_slider_min_length: 40px;
   $_slider_width: 8px;
@@ -20,17 +18,17 @@ scrollbar {
       transition: $_scrollbar_transition;
 
       @if $contrast == 'high' {
-        background-color: gtkalpha(currentColor, .4);
+        background-color: color-mix(in srgb, currentColor 40%, transparent);
 
-        &:hover { background-color: gtkalpha(currentColor, .6); }
+        &:hover { background-color: color-mix(in srgb, currentColor 60%, transparent); }
 
         &:active { background-color: currentColor; }
       } @else {
-        background-color: gtkalpha(currentColor, .2);
+        background-color: color-mix(in srgb, currentColor 20%, transparent);
 
-        &:hover { background-color: gtkalpha(currentColor, .4); }
+        &:hover { background-color: color-mix(in srgb, currentColor 40%, transparent); }
 
-        &:active { background-color: gtkalpha(currentColor, .6); }
+        &:active { background-color: color-mix(in srgb, currentColor 60%, transparent); }
       }
 
       &:disabled { opacity: 0; }
@@ -58,17 +56,9 @@ scrollbar {
 
       > slider {
         @if $contrast == 'high' {
-          outline: 1px solid $scrollbar_outline_color;
+          outline: 1px solid var(--scrollbar-outline-color);
         } @else {
-          outline: 1px solid gtkalpha($scrollbar_outline_color, .6);
-        }
-
-        .osd & {
-          @if $contrast == 'high' {
-            outline: 1px solid $osd_scrollbar_outline_color;
-          } @else {
-            outline: 1px solid gtkalpha($osd_scrollbar_outline_color, .6);
-          }
+          outline: 1px solid color-mix(in srgb, var(--scrollbar-outline-color) 60%, transparent);
         }
 
         outline-offset: -6px;
@@ -80,26 +70,14 @@ scrollbar {
       min-height: 3px;
 
       @if $contrast == 'high' {
-        outline-color: gtkalpha($scrollbar_outline_color, .6);
+        outline-color: color-mix(in srgb, var(--scrollbar-outline-color) 60%, transparent);
       } @else {
-        outline-color: gtkalpha($scrollbar_outline_color, .35);
-      }
-
-      .osd & {
-        @if $contrast == 'high' {
-          outline-color: gtkalpha($osd_scrollbar_outline_color, .6);
-        } @else {
-          outline-color: gtkalpha($osd_scrollbar_outline_color, .35);
-        }
+        outline-color: color-mix(in srgb, var(--scrollbar-outline-color) 35%, transparent);
       }
     }
 
     &.hovering > range > trough {
-      @if $contrast == 'high' {
-        background-color: gtkalpha(currentColor, .25);
-      } @else {
-        background-color: gtkalpha(currentColor, .1);
-      }
+      background-color: color-mix(in srgb, currentColor if($contrast == 'high', 25%, 10%), transparent);
     }
 
     &.horizontal {
@@ -138,7 +116,11 @@ scrollbar {
 
   > range.fine-tune > trough > slider {
     &, &:hover, &:active {
-      background-color: if($contrast == 'high', $accent_color, gtkalpha($accent_color, .6));
+      @if $contrast == 'high' {
+        background-color: var(--accent-color);
+      } @else {
+        background-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
+      }
     }
   }
 }

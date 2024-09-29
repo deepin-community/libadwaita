@@ -1,7 +1,7 @@
 Tests: build-test
 Depends: build-essential,
          libadwaita-1-dev,
-         pkg-config,
+         pkgconf,
          xauth,
          xvfb
 Restrictions: superficial

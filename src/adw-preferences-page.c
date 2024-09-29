@@ -63,6 +63,7 @@ enum {
   PROP_DESCRIPTION,
   PROP_NAME,
   PROP_USE_UNDERLINE,
+  PROP_DESCRIPTION_CENTERED,
   LAST_PROP,
 };
 
@@ -100,6 +101,9 @@ adw_preferences_page_get_property (GObject    *object,
   case PROP_USE_UNDERLINE:
     g_value_set_boolean (value, adw_preferences_page_get_use_underline (self));
     break;
+  case PROP_DESCRIPTION_CENTERED:
+    g_value_set_boolean (value, adw_preferences_page_get_description_centered (self));
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
   }
@@ -128,6 +132,9 @@ adw_preferences_page_set_property (GObject      *object,
     break;
   case PROP_USE_UNDERLINE:
     adw_preferences_page_set_use_underline (self, g_value_get_boolean (value));
+    break;
+  case PROP_DESCRIPTION_CENTERED:
+    adw_preferences_page_set_description_centered (self, g_value_get_boolean (value));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -167,9 +174,10 @@ adw_preferences_page_class_init (AdwPreferencesPageClass *klass)
   object_class->finalize = adw_preferences_page_finalize;
 
   widget_class->compute_expand = adw_widget_compute_expand;
+  widget_class->focus = adw_widget_focus_child;
 
   /**
-   * AdwPreferencesPage:icon-name: (attributes org.gtk.Property.get=adw_preferences_page_get_icon_name org.gtk.Property.set=adw_preferences_page_set_icon_name)
+   * AdwPreferencesPage:icon-name:
    *
    * The icon name for this page.
    */
@@ -179,7 +187,7 @@ adw_preferences_page_class_init (AdwPreferencesPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesPage:title: (attributes org.gtk.Property.get=adw_preferences_page_get_title org.gtk.Property.set=adw_preferences_page_set_title)
+   * AdwPreferencesPage:title:
    *
    * The title for this page.
    */
@@ -189,7 +197,7 @@ adw_preferences_page_class_init (AdwPreferencesPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesPage:description: (attributes org.gtk.Property.get=adw_preferences_page_get_description org.gtk.Property.set=adw_preferences_page_set_description)
+   * AdwPreferencesPage:description:
    *
    * The description to be displayed at the top of the page.
    * 
@@ -201,7 +209,7 @@ adw_preferences_page_class_init (AdwPreferencesPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesPage:name: (attributes org.gtk.Property.get=adw_preferences_page_get_name org.gtk.Property.set=adw_preferences_page_set_name)
+   * AdwPreferencesPage:name:
    *
    * The name of this page.
    */
@@ -211,12 +219,24 @@ adw_preferences_page_class_init (AdwPreferencesPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesPage:use-underline: (attributes org.gtk.Property.get=adw_preferences_page_get_use_underline org.gtk.Property.set=adw_preferences_page_set_use_underline)
+   * AdwPreferencesPage:use-underline:
    *
    * Whether an embedded underline in the title indicates a mnemonic.
    */
   props[PROP_USE_UNDERLINE] =
     g_param_spec_boolean ("use-underline", NULL, NULL,
+                          FALSE,
+                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+  /**
+   * AdwPreferencesPage:description-centered:
+   *
+   * Whether the description should be centered.
+   *
+   * Since: 1.6
+   */
+  props[PROP_DESCRIPTION_CENTERED] =
+    g_param_spec_boolean ("description-centered", NULL, NULL,
                           FALSE,
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -324,7 +344,7 @@ adw_preferences_page_remove (AdwPreferencesPage  *self,
 }
 
 /**
- * adw_preferences_page_get_icon_name: (attributes org.gtk.Method.get_property=icon-name)
+ * adw_preferences_page_get_icon_name:
  * @self: a preferences page
  *
  * Gets the icon name for @self.
@@ -344,7 +364,7 @@ adw_preferences_page_get_icon_name (AdwPreferencesPage *self)
 }
 
 /**
- * adw_preferences_page_set_icon_name: (attributes org.gtk.Method.set_property=icon-name)
+ * adw_preferences_page_set_icon_name:
  * @self: a preferences page
  * @icon_name: (nullable): the icon name
  *
@@ -367,7 +387,7 @@ adw_preferences_page_set_icon_name (AdwPreferencesPage *self,
 }
 
 /**
- * adw_preferences_page_get_title: (attributes org.gtk.Method.get_property=title)
+ * adw_preferences_page_get_title:
  * @self: a preferences page
  *
  * Gets the title of @self.
@@ -387,7 +407,7 @@ adw_preferences_page_get_title (AdwPreferencesPage *self)
 }
 
 /**
- * adw_preferences_page_set_title: (attributes org.gtk.Method.set_property=title)
+ * adw_preferences_page_set_title:
  * @self: a preferences page
  * @title: the title
  *
@@ -410,7 +430,7 @@ adw_preferences_page_set_title (AdwPreferencesPage *self,
 }
 
 /**
- * adw_preferences_page_get_description: (attributes org.gtk.Method.get_property=description)
+ * adw_preferences_page_get_description:
  * @self: a preferences page
  *
  * Gets the description of @self.
@@ -432,7 +452,7 @@ adw_preferences_page_get_description (AdwPreferencesPage *self)
 }
 
 /**
- * adw_preferences_page_set_description: (attributes org.gtk.Method.set_property=description)
+ * adw_preferences_page_set_description:
  * @self: a preferences page
  * @description: the description
  *
@@ -463,7 +483,7 @@ adw_preferences_page_set_description (AdwPreferencesPage *self,
 }
 
 /**
- * adw_preferences_page_get_name: (attributes org.gtk.Method.get_property=name)
+ * adw_preferences_page_get_name:
  * @self: a preferences page
  *
  * Gets the name of @self.
@@ -483,7 +503,7 @@ adw_preferences_page_get_name (AdwPreferencesPage *self)
 }
 
 /**
- * adw_preferences_page_set_name: (attributes org.gtk.Method.set_property=name)
+ * adw_preferences_page_set_name:
  * @self: a preferences page
  * @name: (nullable): the name
  *
@@ -506,7 +526,7 @@ adw_preferences_page_set_name (AdwPreferencesPage *self,
 }
 
 /**
- * adw_preferences_page_get_use_underline: (attributes org.gtk.Method.get_property=use-underline)
+ * adw_preferences_page_get_use_underline:
  * @self: a preferences page
  *
  * Gets whether an embedded underline in the title indicates a mnemonic.
@@ -526,7 +546,7 @@ adw_preferences_page_get_use_underline (AdwPreferencesPage *self)
 }
 
 /**
- * adw_preferences_page_set_use_underline: (attributes org.gtk.Method.set_property=use-underline)
+ * adw_preferences_page_set_use_underline:
  * @self: a preferences page
  * @use_underline: `TRUE` if underlines in the text indicate mnemonics
  *
@@ -550,6 +570,63 @@ adw_preferences_page_set_use_underline (AdwPreferencesPage *self,
   priv->use_underline = use_underline;
 
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_USE_UNDERLINE]);
+}
+
+/**
+ * adw_preferences_page_get_description_centered:
+ * @self: a preferences page
+ *
+ * Gets whether the description is centered.
+ *
+ * Returns: whether the description is centered.
+ *
+ * Since: 1.6
+ */
+gboolean
+adw_preferences_page_get_description_centered (AdwPreferencesPage *self)
+{
+  AdwPreferencesPagePrivate *priv;
+
+  g_return_val_if_fail (ADW_IS_PREFERENCES_PAGE (self), FALSE);
+
+  priv = adw_preferences_page_get_instance_private (self);
+
+  return gtk_label_get_justify (priv->description) == GTK_JUSTIFY_CENTER;
+}
+
+/**
+ * adw_preferences_page_set_description_centered:
+ * @self: a preferences page
+ * @centered: If the description should be centered
+ *
+ * Sets whether the description should be centered.
+ *
+ * Since: 1.6
+ */
+void
+adw_preferences_page_set_description_centered (AdwPreferencesPage *self,
+                                               gboolean            centered)
+{
+  AdwPreferencesPagePrivate *priv;
+
+  g_return_if_fail (ADW_IS_PREFERENCES_PAGE (self));
+
+  priv = adw_preferences_page_get_instance_private (self);
+
+  centered = !!centered;
+
+  if (adw_preferences_page_get_description_centered (self) == centered)
+    return;
+
+  if (centered) {
+    gtk_label_set_justify (priv->description, GTK_JUSTIFY_CENTER);
+    gtk_label_set_xalign (priv->description, 0.5);
+  } else {
+    gtk_label_set_justify (priv->description, GTK_JUSTIFY_LEFT);
+    gtk_label_set_xalign (priv->description, 0);
+  }
+
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_DESCRIPTION_CENTERED]);
 }
 
 static GListModel *

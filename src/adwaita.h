@@ -10,8 +10,8 @@
 
 G_BEGIN_DECLS
 
-#if !GTK_CHECK_VERSION(4, 13, 4)
-# error "libadwaita requires gtk4 >= 4.13.4"
+#if !GTK_CHECK_VERSION(4, 15, 2)
+# error "libadwaita requires gtk4 >= 4.15.2"
 #endif
 
 #if !GLIB_CHECK_VERSION(2, 76, 0)
@@ -23,6 +23,7 @@ G_BEGIN_DECLS
 #include "adw-version.h"
 #include "adw-about-dialog.h"
 #include "adw-about-window.h"
+#include "adw-accent-color.h"
 #include "adw-action-row.h"
 #include "adw-alert-dialog.h"
 #include "adw-animation.h"
@@ -33,9 +34,11 @@ G_BEGIN_DECLS
 #include "adw-avatar.h"
 #include "adw-banner.h"
 #include "adw-bin.h"
+#include "adw-bottom-sheet.h"
 #include "adw-breakpoint.h"
 #include "adw-breakpoint-bin.h"
 #include "adw-button-content.h"
+#include "adw-button-row.h"
 #include "adw-carousel.h"
 #include "adw-carousel-indicator-dots.h"
 #include "adw-carousel-indicator-lines.h"
@@ -51,10 +54,13 @@ G_BEGIN_DECLS
 #include "adw-flap.h"
 #include "adw-fold-threshold-policy.h"
 #include "adw-header-bar.h"
+#include "adw-layout.h"
+#include "adw-layout-slot.h"
 #include "adw-leaflet.h"
 #include "adw-length-unit.h"
 #include "adw-main.h"
 #include "adw-message-dialog.h"
+#include "adw-multi-layout-view.h"
 #include "adw-navigation-direction.h"
 #include "adw-navigation-split-view.h"
 #include "adw-navigation-view.h"
@@ -66,6 +72,8 @@ G_BEGIN_DECLS
 #include "adw-preferences-row.h"
 #include "adw-preferences-window.h"
 #include "adw-spin-row.h"
+#include "adw-spinner.h"
+#include "adw-spinner-paintable.h"
 #include "adw-split-button.h"
 #include "adw-spring-animation.h"
 #include "adw-spring-params.h"

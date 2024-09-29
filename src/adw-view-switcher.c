@@ -39,8 +39,6 @@
  *
  * ```xml
  * <object class="AdwWindow">
- *   <property name="width-request">360</property>
- *   <property name="height-request">200</property>
  *   <child>
  *     <object class="AdwBreakpoint">
  *       <condition>max-width: 550sp</condition>
@@ -390,7 +388,7 @@ adw_view_switcher_class_init (AdwViewSwitcherClass *klass)
   object_class->finalize = adw_view_switcher_finalize;
 
   /**
-   * AdwViewSwitcher:policy: (attributes org.gtk.Property.get=adw_view_switcher_get_policy org.gtk.Property.set=adw_view_switcher_set_policy)
+   * AdwViewSwitcher:policy:
    *
    * The policy to determine which mode to use.
    */
@@ -401,7 +399,7 @@ adw_view_switcher_class_init (AdwViewSwitcherClass *klass)
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwViewSwitcher:stack: (attributes org.gtk.Property.get=adw_view_switcher_get_stack org.gtk.Property.set=adw_view_switcher_set_stack)
+   * AdwViewSwitcher:stack:
    *
    * The stack the view switcher controls.
    */
@@ -443,7 +441,7 @@ adw_view_switcher_new (void)
 }
 
 /**
- * adw_view_switcher_get_policy: (attributes org.gtk.Method.get_property=policy)
+ * adw_view_switcher_get_policy:
  * @self: a view switcher
  *
  * Gets the policy of @self.
@@ -459,7 +457,7 @@ adw_view_switcher_get_policy (AdwViewSwitcher *self)
 }
 
 /**
- * adw_view_switcher_set_policy: (attributes org.gtk.Method.set_property=policy)
+ * adw_view_switcher_set_policy:
  * @self: a view switcher
  * @policy: the new policy
  *
@@ -498,7 +496,7 @@ adw_view_switcher_set_policy (AdwViewSwitcher       *self,
 }
 
 /**
- * adw_view_switcher_get_stack: (attributes org.gtk.Method.get_property=stack)
+ * adw_view_switcher_get_stack:
  * @self: a view switcher
  *
  * Gets the stack controlled by @self.
@@ -514,7 +512,7 @@ adw_view_switcher_get_stack (AdwViewSwitcher *self)
 }
 
 /**
- * adw_view_switcher_set_stack: (attributes org.gtk.Method.set_property=stack)
+ * adw_view_switcher_set_stack:
  * @self: a view switcher
  * @stack: (nullable): a stack
  *

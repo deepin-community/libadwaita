@@ -174,7 +174,7 @@
  *                          "application-icon", "org.example.App",
  *                          "version", "1.2.3",
  *                          "copyright", "© 2022 Angela Avery",
- *                          "issue-url", "https://gitlab.gnome.org/example/example/-/issues/new",
+ *                          "issue-url", "https://gitlab.gnome.org/example/example/-/issues/",
  *                          "license-type", GTK_LICENSE_GPL_3_0,
  *                          "developers", developers,
  *                          "designers", designers,
@@ -211,8 +211,8 @@ static const LicenseInfo gtk_license_info [] = {
   { N_("BSD 2-Clause License"), "https://opensource.org/licenses/bsd-license.php", "BSD-2-Clause" },
   { N_("The MIT License (MIT)"), "https://opensource.org/licenses/mit-license.php", "MIT" },
   { N_("Artistic License 2.0"), "https://opensource.org/licenses/artistic-license-2.0.php", "Artistic-2.0" },
-  { N_("GNU General Public License, version 2 only"), "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html", "GPL-2.0" },
-  { N_("GNU General Public License, version 3 only"), "https://www.gnu.org/licenses/gpl-3.0.html", "GPL-3.0" },
+  { N_("GNU General Public License, version 2 only"), "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html", "GPL-2.0-only" },
+  { N_("GNU General Public License, version 3 only"), "https://www.gnu.org/licenses/gpl-3.0.html", "GPL-3.0-only" },
   { N_("GNU Lesser General Public License, version 2.1 only"), "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html", "LGPL-2.1-only" },
   { N_("GNU Lesser General Public License, version 3 only"), "https://www.gnu.org/licenses/lgpl-3.0.html", "LGPL-3.0-only" },
   { N_("GNU Affero General Public License, version 3 or later"), "https://www.gnu.org/licenses/agpl-3.0.html", "AGPL-3.0-or-later" },
@@ -226,6 +226,17 @@ static const LicenseInfo gtk_license_info [] = {
 /* Keep this static assertion updated with the last element of the enumeration,
  * and make sure it matches the last element of the array. */
 G_STATIC_ASSERT (G_N_ELEMENTS (gtk_license_info) - 1 == GTK_LICENSE_0BSD);
+
+typedef struct {
+  const char *spdx_id;
+  GtkLicense license;
+} LicenseAlias;
+
+/* Deprecated SPDX IDs */
+static const LicenseAlias license_aliases [] = {
+  { "GPL-2.0", GTK_LICENSE_GPL_2_0_ONLY },
+  { "GPL-3.0", GTK_LICENSE_GPL_3_0_ONLY },
+};
 
 typedef struct {
   char *name;
@@ -1374,7 +1385,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
   object_class->set_property = adw_about_dialog_set_property;
 
   /**
-   * AdwAboutDialog:application-icon: (attributes org.gtk.Property.get=adw_about_dialog_get_application_icon org.gtk.Property.set=adw_about_dialog_set_application_icon)
+   * AdwAboutDialog:application-icon:
    *
    * The name of the application icon.
    *
@@ -1388,7 +1399,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:application-name: (attributes org.gtk.Property.get=adw_about_dialog_get_application_name org.gtk.Property.set=adw_about_dialog_set_application_name)
+   * AdwAboutDialog:application-name:
    *
    * The name of the application.
    *
@@ -1402,7 +1413,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:developer-name: (attributes org.gtk.Property.get=adw_about_dialog_get_developer_name org.gtk.Property.set=adw_about_dialog_set_developer_name)
+   * AdwAboutDialog:developer-name:
    *
    * The developer name.
    *
@@ -1423,7 +1434,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:version: (attributes org.gtk.Property.get=adw_about_dialog_get_version org.gtk.Property.set=adw_about_dialog_set_version)
+   * AdwAboutDialog:version:
    *
    * The version of the application.
    *
@@ -1440,7 +1451,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:release-notes-version: (attributes org.gtk.Property.get=adw_about_dialog_get_release_notes_version org.gtk.Property.set=adw_about_dialog_set_release_notes_version)
+   * AdwAboutDialog:release-notes-version:
    *
    * The version described by the application's release notes.
    *
@@ -1463,7 +1474,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:release-notes: (attributes org.gtk.Property.get=adw_about_dialog_get_release_notes org.gtk.Property.set=adw_about_dialog_set_release_notes)
+   * AdwAboutDialog:release-notes:
    *
    * The release notes of the application.
    *
@@ -1498,7 +1509,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:comments: (attributes org.gtk.Property.get=adw_about_dialog_get_comments org.gtk.Property.set=adw_about_dialog_set_comments)
+   * AdwAboutDialog:comments:
    *
    * The comments about the application.
    *
@@ -1515,7 +1526,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:website: (attributes org.gtk.Property.get=adw_about_dialog_get_website org.gtk.Property.set=adw_about_dialog_set_website)
+   * AdwAboutDialog:website:
    *
    * The URL of the application's website.
    *
@@ -1532,7 +1543,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:support-url: (attributes org.gtk.Property.get=adw_about_dialog_get_support_url org.gtk.Property.set=adw_about_dialog_set_support_url)
+   * AdwAboutDialog:support-url:
    *
    * The URL of the application's support page.
    *
@@ -1546,7 +1557,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:issue-url: (attributes org.gtk.Property.get=adw_about_dialog_get_issue_url org.gtk.Property.set=adw_about_dialog_set_issue_url)
+   * AdwAboutDialog:issue-url:
    *
    * The URL for the application's issue tracker.
    *
@@ -1560,7 +1571,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:debug-info: (attributes org.gtk.Property.get=adw_about_dialog_get_debug_info org.gtk.Property.set=adw_about_dialog_set_debug_info)
+   * AdwAboutDialog:debug-info:
    *
    * The debug information.
    *
@@ -1582,7 +1593,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:debug-info-filename: (attributes org.gtk.Property.get=adw_about_dialog_get_debug_info_filename org.gtk.Property.set=adw_about_dialog_set_debug_info_filename)
+   * AdwAboutDialog:debug-info-filename:
    *
    * The debug information filename.
    *
@@ -1599,7 +1610,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:developers: (attributes org.gtk.Property.get=adw_about_dialog_get_developers org.gtk.Property.set=adw_about_dialog_set_developers)
+   * AdwAboutDialog:developers:
    *
    * The list of developers of the application.
    *
@@ -1625,7 +1636,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                           G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:designers: (attributes org.gtk.Property.get=adw_about_dialog_get_designers org.gtk.Property.set=adw_about_dialog_set_designers)
+   * AdwAboutDialog:designers:
    *
    * The list of designers of the application.
    *
@@ -1651,7 +1662,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                           G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:artists: (attributes org.gtk.Property.get=adw_about_dialog_get_artists org.gtk.Property.set=adw_about_dialog_set_artists)
+   * AdwAboutDialog:artists:
    *
    * The list of artists of the application.
    *
@@ -1677,7 +1688,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                           G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:documenters: (attributes org.gtk.Property.get=adw_about_dialog_get_documenters org.gtk.Property.set=adw_about_dialog_set_documenters)
+   * AdwAboutDialog:documenters:
    *
    * The list of documenters of the application.
    *
@@ -1703,7 +1714,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:translator-credits: (attributes org.gtk.Property.get=adw_about_dialog_get_translator_credits org.gtk.Property.set=adw_about_dialog_set_translator_credits)
+   * AdwAboutDialog:translator-credits:
    *
    * The translator credits string.
    *
@@ -1732,7 +1743,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:copyright: (attributes org.gtk.Property.get=adw_about_dialog_get_copyright org.gtk.Property.set=adw_about_dialog_set_copyright)
+   * AdwAboutDialog:copyright:
    *
    * The copyright information.
    *
@@ -1753,7 +1764,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:license-type: (attributes org.gtk.Property.get=adw_about_dialog_get_license_type org.gtk.Property.set=adw_about_dialog_set_license_type)
+   * AdwAboutDialog:license-type:
    *
    * The license type.
    *
@@ -1783,7 +1794,7 @@ adw_about_dialog_class_init (AdwAboutDialogClass *klass)
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwAboutDialog:license: (attributes org.gtk.Property.get=adw_about_dialog_get_license org.gtk.Property.set=adw_about_dialog_set_license)
+   * AdwAboutDialog:license:
    *
    * The license text.
    *
@@ -1965,14 +1976,15 @@ adw_about_dialog_new (void)
  *
  * * [property@AboutDialog:application-icon] is set from the `<id>`
  * * [property@AboutDialog:application-name] is set from the `<name>`
- * * [property@AboutDialog:developer-name] is set from the `<developer_name>`
+ * * [property@AboutDialog:developer-name] is set from the `<name>` within
+ *      `<developer>`
  * * [property@AboutDialog:version] is set from the version of the latest release
  * * [property@AboutDialog:website] is set from the `<url type="homepage">`
  * * [property@AboutDialog:support-url] is set from the `<url type="help">`
  * * [property@AboutDialog:issue-url] is set from the `<url type="bugtracker">`
- * * [property@AboutDialog:license-type] is set from the `<project_license>`
- *   If the license type retrieved from AppStream is not listed in
- *   [enum@Gtk.License], it will be set to `GTK_LICENCE_CUSTOM`.
+ * * [property@AboutDialog:license-type] is set from the `<project_license>`.
+ *     If the license type retrieved from AppStream is not listed in
+ *     [enum@Gtk.License], it will be set to `GTK_LICENCE_CUSTOM`.
  *
  * If @release_notes_version is not `NULL`,
  * [property@AboutDialog:release-notes-version] is set to match it, while
@@ -2105,6 +2117,14 @@ adw_about_dialog_new_from_appdata (const char *resource_path,
       }
     }
 
+    /* Handle deprecated SPDX IDs */
+    for (i = 0; i < G_N_ELEMENTS (license_aliases); i++) {
+      if (g_strcmp0 (license_aliases[i].spdx_id, project_license) == 0) {
+        adw_about_dialog_set_license_type (self, license_aliases[i].license);
+        break;
+      }
+    }
+
     if (adw_about_dialog_get_license_type (self) == GTK_LICENSE_UNKNOWN)
       adw_about_dialog_set_license_type (self, GTK_LICENSE_CUSTOM);
   }
@@ -2127,7 +2147,7 @@ adw_about_dialog_new_from_appdata (const char *resource_path,
 }
 
 /**
- * adw_about_dialog_get_application_icon: (attributes org.gtk.Method.get_property=application-icon)
+ * adw_about_dialog_get_application_icon:
  * @self: an about dialog
  *
  * Gets the name of the application icon for @self.
@@ -2145,7 +2165,7 @@ adw_about_dialog_get_application_icon (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_application_icon: (attributes org.gtk.Method.set_property=application-icon)
+ * adw_about_dialog_set_application_icon:
  * @self: an about dialog
  * @application_icon: the application icon name
  *
@@ -2172,7 +2192,7 @@ adw_about_dialog_set_application_icon (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_application_name: (attributes org.gtk.Method.get_property=application-name)
+ * adw_about_dialog_get_application_name:
  * @self: an about dialog
  *
  * Gets the application name for @self.
@@ -2190,7 +2210,7 @@ adw_about_dialog_get_application_name (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_application_name: (attributes org.gtk.Method.set_property=application-name)
+ * adw_about_dialog_set_application_name:
  * @self: an about dialog
  * @application_name: the application name
  *
@@ -2217,7 +2237,7 @@ adw_about_dialog_set_application_name (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_developer_name: (attributes org.gtk.Method.get_property=developer-name)
+ * adw_about_dialog_get_developer_name:
  * @self: an about dialog
  *
  * Gets the developer name for @self.
@@ -2235,7 +2255,7 @@ adw_about_dialog_get_developer_name (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_developer_name: (attributes org.gtk.Method.set_property=developer-name)
+ * adw_about_dialog_set_developer_name:
  * @self: an about dialog
  * @developer_name: the developer name
  *
@@ -2267,7 +2287,7 @@ adw_about_dialog_set_developer_name (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_version: (attributes org.gtk.Method.get_property=version)
+ * adw_about_dialog_get_version:
  * @self: an about dialog
  *
  * Gets the version for @self.
@@ -2285,7 +2305,7 @@ adw_about_dialog_get_version (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_version: (attributes org.gtk.Method.set_property=version)
+ * adw_about_dialog_set_version:
  * @self: an about dialog
  * @version: the version
  *
@@ -2314,7 +2334,7 @@ adw_about_dialog_set_version (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_release_notes_version: (attributes org.gtk.Method.get_property=release-notes-version)
+ * adw_about_dialog_get_release_notes_version:
  * @self: an about dialog
  *
  * Gets the version described by the application's release notes.
@@ -2332,7 +2352,7 @@ adw_about_dialog_get_release_notes_version (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_release_notes_version: (attributes org.gtk.Method.set_property=release-notes-version)
+ * adw_about_dialog_set_release_notes_version:
  * @self: an about dialog
  * @version: the release notes version
  *
@@ -2368,7 +2388,7 @@ adw_about_dialog_set_release_notes_version (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_release_notes: (attributes org.gtk.Method.get_property=release-notes)
+ * adw_about_dialog_get_release_notes:
  * @self: an about dialog
  *
  * Gets the release notes for @self.
@@ -2386,7 +2406,7 @@ adw_about_dialog_get_release_notes (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_release_notes: (attributes org.gtk.Method.set_property=release-notes)
+ * adw_about_dialog_set_release_notes:
  * @self: an about dialog
  * @release_notes: the release notes
  *
@@ -2434,7 +2454,7 @@ adw_about_dialog_set_release_notes (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_comments: (attributes org.gtk.Method.get_property=comments)
+ * adw_about_dialog_get_comments:
  * @self: an about dialog
  *
  * Gets the comments about the application.
@@ -2452,7 +2472,7 @@ adw_about_dialog_get_comments (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_comments: (attributes org.gtk.Method.set_property=comments)
+ * adw_about_dialog_set_comments:
  * @self: an about dialog
  * @comments: the comments
  *
@@ -2481,7 +2501,7 @@ adw_about_dialog_set_comments (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_website: (attributes org.gtk.Method.get_property=website)
+ * adw_about_dialog_get_website:
  * @self: an about dialog
  *
  * Gets the application website URL for @self.
@@ -2499,7 +2519,7 @@ adw_about_dialog_get_website (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_website: (attributes org.gtk.Method.set_property=website)
+ * adw_about_dialog_set_website:
  * @self: an about dialog
  * @website: the website URL
  *
@@ -2528,7 +2548,7 @@ adw_about_dialog_set_website (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_support_url: (attributes org.gtk.Method.get_property=support-url)
+ * adw_about_dialog_get_support_url:
  * @self: an about dialog
  *
  * Gets the URL of the support page for @self.
@@ -2546,7 +2566,7 @@ adw_about_dialog_get_support_url (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_support_url: (attributes org.gtk.Method.set_property=support-url)
+ * adw_about_dialog_set_support_url:
  * @self: an about dialog
  * @support_url: the support page URL
  *
@@ -2572,7 +2592,7 @@ adw_about_dialog_set_support_url (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_issue_url: (attributes org.gtk.Method.get_property=issue-url)
+ * adw_about_dialog_get_issue_url:
  * @self: an about dialog
  *
  * Gets the issue tracker URL for @self.
@@ -2590,7 +2610,7 @@ adw_about_dialog_get_issue_url (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_issue_url: (attributes org.gtk.Method.set_property=issue-url)
+ * adw_about_dialog_set_issue_url:
  * @self: an about dialog
  * @issue_url: the issue tracker URL
  *
@@ -2667,7 +2687,7 @@ adw_about_dialog_add_link (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_debug_info: (attributes org.gtk.Method.get_property=debug-info)
+ * adw_about_dialog_get_debug_info:
  * @self: an about dialog
  *
  * Gets the debug information for @self.
@@ -2685,7 +2705,7 @@ adw_about_dialog_get_debug_info (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_debug_info: (attributes org.gtk.Method.set_property=debug-info)
+ * adw_about_dialog_set_debug_info:
  * @self: an about dialog
  * @debug_info: the debug information
  *
@@ -2719,7 +2739,7 @@ adw_about_dialog_set_debug_info (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_debug_info_filename: (attributes org.gtk.Method.get_property=debug-info-filename)
+ * adw_about_dialog_get_debug_info_filename:
  * @self: an about dialog
  *
  * Gets the debug information filename for @self.
@@ -2737,7 +2757,7 @@ adw_about_dialog_get_debug_info_filename (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_debug_info_filename: (attributes org.gtk.Method.set_property=debug-info)
+ * adw_about_dialog_set_debug_info_filename:
  * @self: an about dialog
  * @filename: the debug info filename
  *
@@ -2764,7 +2784,7 @@ adw_about_dialog_set_debug_info_filename (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_developers: (attributes org.gtk.Method.get_property=developers)
+ * adw_about_dialog_get_developers:
  * @self: an about dialog
  *
  * Gets the list of developers of the application.
@@ -2782,7 +2802,7 @@ adw_about_dialog_get_developers (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_developers: (attributes org.gtk.Method.set_property=developers)
+ * adw_about_dialog_set_developers:
  * @self: an about dialog
  * @developers: (nullable) (transfer none) (array zero-terminated=1): the list of developers
  *
@@ -2822,7 +2842,7 @@ adw_about_dialog_set_developers (AdwAboutDialog  *self,
 }
 
 /**
- * adw_about_dialog_get_designers: (attributes org.gtk.Method.get_property=designers)
+ * adw_about_dialog_get_designers:
  * @self: an about dialog
  *
  * Gets the list of designers of the application.
@@ -2840,7 +2860,7 @@ adw_about_dialog_get_designers (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_designers: (attributes org.gtk.Method.set_property=designers)
+ * adw_about_dialog_set_designers:
  * @self: an about dialog
  * @designers: (nullable) (transfer none) (array zero-terminated=1): the list of designers
  *
@@ -2880,7 +2900,7 @@ adw_about_dialog_set_designers (AdwAboutDialog  *self,
 }
 
 /**
- * adw_about_dialog_get_artists: (attributes org.gtk.Method.get_property=artists)
+ * adw_about_dialog_get_artists:
  * @self: an about dialog
  *
  * Gets the list of artists of the application.
@@ -2898,7 +2918,7 @@ adw_about_dialog_get_artists (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_artists: (attributes org.gtk.Method.set_property=artists)
+ * adw_about_dialog_set_artists:
  * @self: an about dialog
  * @artists: (nullable) (transfer none) (array zero-terminated=1): the list of artists
  *
@@ -2938,7 +2958,7 @@ adw_about_dialog_set_artists (AdwAboutDialog  *self,
 }
 
 /**
- * adw_about_dialog_get_documenters: (attributes org.gtk.Method.get_property=documenters)
+ * adw_about_dialog_get_documenters:
  * @self: an about dialog
  *
  * Gets the list of documenters of the application.
@@ -2956,7 +2976,7 @@ adw_about_dialog_get_documenters (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_documenters: (attributes org.gtk.Method.set_property=documenters)
+ * adw_about_dialog_set_documenters:
  * @self: an about dialog
  * @documenters: (nullable) (transfer none) (array zero-terminated=1): the list of documenters
  *
@@ -2996,7 +3016,7 @@ adw_about_dialog_set_documenters (AdwAboutDialog  *self,
 }
 
 /**
- * adw_about_dialog_get_translator_credits: (attributes org.gtk.Method.get_property=translator-credits)
+ * adw_about_dialog_get_translator_credits:
  * @self: an about dialog
  *
  * Gets the translator credits string.
@@ -3014,7 +3034,7 @@ adw_about_dialog_get_translator_credits (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_translator_credits: (attributes org.gtk.Method.set_property=translator-credits)
+ * adw_about_dialog_set_translator_credits:
  * @self: an about dialog
  * @translator_credits: the translator credits
  *
@@ -3139,7 +3159,7 @@ adw_about_dialog_add_acknowledgement_section (AdwAboutDialog  *self,
 }
 
 /**
- * adw_about_dialog_get_copyright: (attributes org.gtk.Method.get_property=copyright)
+ * adw_about_dialog_get_copyright:
  * @self: an about dialog
  *
  * Gets the copyright information for @self.
@@ -3157,7 +3177,7 @@ adw_about_dialog_get_copyright (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_copyright: (attributes org.gtk.Method.set_property=copyright)
+ * adw_about_dialog_set_copyright:
  * @self: an about dialog
  * @copyright: the copyright information
  *
@@ -3190,7 +3210,7 @@ adw_about_dialog_set_copyright (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_license_type: (attributes org.gtk.Method.get_property=license-type)
+ * adw_about_dialog_get_license_type:
  * @self: an about dialog
  *
  * Gets the license type for @self.
@@ -3208,7 +3228,7 @@ adw_about_dialog_get_license_type (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_license_type: (attributes org.gtk.Method.set_property=license-type)
+ * adw_about_dialog_set_license_type:
  * @self: an about dialog
  * @license_type: the license type
  *
@@ -3254,7 +3274,7 @@ adw_about_dialog_set_license_type (AdwAboutDialog *self,
 }
 
 /**
- * adw_about_dialog_get_license: (attributes org.gtk.Method.get_property=license)
+ * adw_about_dialog_get_license:
  * @self: an about dialog
  *
  * Gets the license for @self.
@@ -3272,7 +3292,7 @@ adw_about_dialog_get_license (AdwAboutDialog *self)
 }
 
 /**
- * adw_about_dialog_set_license: (attributes org.gtk.Method.set_property=license)
+ * adw_about_dialog_set_license:
  * @self: an about dialog
  * @license: the license
  *

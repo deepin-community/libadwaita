@@ -1,8 +1,65 @@
-libadwaita-1 (1.5.0-1deepin1) unstable; urgency=medium
+libadwaita-1 (1.6.0-1) unstable; urgency=medium
 
-  * Update build depends
+  * New upstream release
+  * Remove patch applied in new release
+  * Release to unstable
 
--- Wang Zichong <wangzichong@deepin.org> Fri, 17 May 2024 01:05:00 +0800
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Sun, 15 Sep 2024 17:33:05 -0400
+
+libadwaita-1 (1.6~rc-2) experimental; urgency=medium
+
+  * Team upload
+  * d/p/test-bottom-sheet-Pass-alignment-in-varargs-correctly.patch:
+    Add proposed patch to fix undefined behaviour in a unit test
+    (Closes: #1080324, #1080325)
+
+ -- Simon McVittie <smcv@debian.org>  Fri, 13 Sep 2024 11:04:06 +0100
+
+libadwaita-1 (1.6~rc-1) experimental; urgency=medium
+
+  [ Jeremy Bícha ]
+  * New upstream release
+
+  [ Marco Trevisan (Treviño) ]
+  * debian/control: Add test dependency on mesa-vulkan-drivers
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 30 Aug 2024 22:09:24 -0400
+
+libadwaita-1 (1.6~beta-1) experimental; urgency=medium
+
+  * New upstream release
+  * debian/libadwaita-1-0.symbols: Add new symbols
+  * Bump minimum GTK4 to 4.15.2
+  * Build tests separately from main build to avoid including exported
+    private symbols
+  * Bump Standards Version to 4.7.0
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 02 Aug 2024 15:18:00 -0400
+
+libadwaita-1 (1.5.3-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 02 Aug 2024 14:45:20 -0400
+
+libadwaita-1 (1.5.2-2) unstable; urgency=medium
+
+  * Set minimum GTK4 to 4.13.4
+  * Revert "Revert 3 commits bumping minimum GTK4"
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 31 Jul 2024 14:38:54 -0400
+
+libadwaita-1 (1.5.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 28 Jun 2024 14:32:35 -0400
+
+libadwaita-1 (1.5.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Tue, 28 May 2024 15:46:47 -0400
 
 libadwaita-1 (1.5.0-1) unstable; urgency=medium
 

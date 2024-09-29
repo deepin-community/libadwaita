@@ -26,6 +26,13 @@ Slug: widget-gallery
   <img src="banner.png" alt="banner">
 </picture>](class.Banner.html)
 
+## Spinner
+
+[<picture>
+  <source srcset="spinner-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="spinner.png" alt="spinner">
+</picture>](class.Spinner.html)
+
 ## Avatar
 
 [<picture>
@@ -108,8 +115,15 @@ Slug: widget-gallery
 
 [<picture>
   <source srcset="spin-row-dark.png" media="(prefers-color-scheme: dark)">
-  <img src="spin-row.png" alt="switch-row">
+  <img src="spin-row.png" alt="spin-row">
 </picture>](class.SpinRow.html)
+
+## Button Row
+
+[<picture>
+  <source srcset="button-rows-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="button-rows.png" alt="button-rows">
+</picture>](class.ButtonRow.html)
 
 # Preferences
 
@@ -210,6 +224,13 @@ Slug: widget-gallery
   <source srcset="tab-button-dark.png" media="(prefers-color-scheme: dark)">
   <img src="tab-button.png" alt="tab-button">
 </picture>](class.TabButton.html)
+
+## Bottom Sheet
+
+[<picture>
+  <source srcset="bottom-sheet-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="bottom-sheet.png" alt="bottom-sheet">
+</picture>](class.BottomSheet.html)
 
 # Helpers
 

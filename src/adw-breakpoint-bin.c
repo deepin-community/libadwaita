@@ -266,7 +266,7 @@ breakpoint_changed_tick_cb (GtkWidget        *widget,
   int i;
 
   priv->tick_cb_id = 0;
-  priv->old_node = NULL;
+  g_clear_pointer (&priv->old_node, gsk_render_node_unref);
   gtk_widget_set_child_visible (priv->child, TRUE);
   gtk_widget_queue_resize (GTK_WIDGET (self));
 
@@ -579,7 +579,7 @@ adw_breakpoint_bin_class_init (AdwBreakpointBinClass *klass)
   widget_class->grab_focus = adw_breakpoint_bin_grab_focus;
 
   /**
-   * AdwBreakpointBin:child: (attributes org.gtk.Property.get=adw_breakpoint_bin_get_child org.gtk.Property.set=adw_breakpoint_bin_set_child)
+   * AdwBreakpointBin:child:
    *
    * The child widget.
    *
@@ -591,7 +591,7 @@ adw_breakpoint_bin_class_init (AdwBreakpointBinClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwBreakpointBin:current-breakpoint: (attributes org.gtk.Property.get=adw_breakpoint_bin_get_current_breakpoint)
+   * AdwBreakpointBin:current-breakpoint:
    *
    * The current breakpoint.
    *
@@ -659,7 +659,7 @@ adw_breakpoint_bin_new (void)
 }
 
 /**
- * adw_breakpoint_bin_get_child: (attributes org.gtk.Method.get_property=child)
+ * adw_breakpoint_bin_get_child:
  * @self: a breakpoint bin
  *
  * Gets the child widget of @self.
@@ -681,7 +681,7 @@ adw_breakpoint_bin_get_child (AdwBreakpointBin *self)
 }
 
 /**
- * adw_breakpoint_bin_set_child: (attributes org.gtk.Method.set_property=child)
+ * adw_breakpoint_bin_set_child:
  * @self: a breakpoint bin
  * @child: (nullable): the child widget
  *
@@ -777,7 +777,7 @@ adw_breakpoint_bin_remove_breakpoint (AdwBreakpointBin *self,
 }
 
 /**
- * adw_breakpoint_bin_get_current_breakpoint: (attributes org.gtk.Method.get_property=current-breakpoint)
+ * adw_breakpoint_bin_get_current_breakpoint:
  * @self: a breakpoint bin
  *
  * Gets the current breakpoint.

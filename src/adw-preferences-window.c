@@ -40,6 +40,8 @@
  *
  * `AdwPreferencesWindow` has a main CSS node with the name `window` and the
  * style class `.preferences`.
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 
 typedef struct
@@ -589,9 +591,11 @@ adw_preferences_window_class_init (AdwPreferencesWindowClass *klass)
   object_class->dispose = adw_preferences_window_dispose;
 
   /**
-   * AdwPreferencesWindow:visible-page: (attributes org.gtk.Property.get=adw_preferences_window_get_visible_page org.gtk.Property.set=adw_preferences_window_set_visible_page)
+   * AdwPreferencesWindow:visible-page:
    *
    * The currently visible page.
+   *
+   * Deprecated: 1.6: Use [class@PreferencesDialog].
    */
   props[PROP_VISIBLE_PAGE] =
     g_param_spec_object ("visible-page", NULL, NULL,
@@ -599,11 +603,13 @@ adw_preferences_window_class_init (AdwPreferencesWindowClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesWindow:visible-page-name: (attributes org.gtk.Property.get=adw_preferences_window_get_visible_page_name org.gtk.Property.set=adw_preferences_window_set_visible_page_name)
+   * AdwPreferencesWindow:visible-page-name:
    *
    * The name of the currently visible page.
    *
    * See [property@PreferencesWindow:visible-page].
+   *
+   * Deprecated: 1.6: Use [class@PreferencesDialog].
    */
   props[PROP_VISIBLE_PAGE_NAME] =
     g_param_spec_string ("visible-page-name", NULL, NULL,
@@ -611,9 +617,11 @@ adw_preferences_window_class_init (AdwPreferencesWindowClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesWindow:search-enabled: (attributes org.gtk.Property.get=adw_preferences_window_get_search_enabled org.gtk.Property.set=adw_preferences_window_set_search_enabled)
+   * AdwPreferencesWindow:search-enabled:
    *
    * Whether search is enabled.
+   *
+   * Deprecated: 1.6: Use [class@PreferencesDialog].
    */
   props[PROP_SEARCH_ENABLED] =
     g_param_spec_boolean ("search-enabled", NULL, NULL,
@@ -621,7 +629,7 @@ adw_preferences_window_class_init (AdwPreferencesWindowClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesWindow:can-navigate-back: (attributes org.gtk.Property.get=adw_preferences_window_get_can_navigate_back org.gtk.Property.set=adw_preferences_window_set_can_navigate_back)
+   * AdwPreferencesWindow:can-navigate-back:
    *
    * Whether gestures and shortcuts for closing subpages are enabled.
    *
@@ -636,10 +644,10 @@ adw_preferences_window_class_init (AdwPreferencesWindowClass *klass)
    *
    * For right-to-left locales, gestures and shortcuts are reversed.
    *
-   * Deprecated: 1.4: Use [property@NavigationPage:can-pop] instead.
-   *
    * Has no effect for subpages added with
    * [method@PreferencesWindow.push_subpage].
+   *
+   * Deprecated: 1.4: Use [property@NavigationPage:can-pop] instead.
    */
   props[PROP_CAN_NAVIGATE_BACK] =
     g_param_spec_boolean ("can-navigate-back", NULL, NULL,
@@ -648,7 +656,12 @@ adw_preferences_window_class_init (AdwPreferencesWindowClass *klass)
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 
+#ifdef __APPLE__
+  gtk_widget_class_add_binding (widget_class, GDK_KEY_f, GDK_META_MASK, search_open_cb, NULL);
+#else
   gtk_widget_class_add_binding (widget_class, GDK_KEY_f, GDK_CONTROL_MASK, search_open_cb, NULL);
+#endif
+
   gtk_widget_class_add_binding (widget_class, GDK_KEY_Escape, 0, close_cb, NULL);
 
   gtk_widget_class_set_template_from_resource (widget_class,
@@ -749,6 +762,8 @@ adw_preferences_window_buildable_init (GtkBuildableIface *iface)
  * Creates a new `AdwPreferencesWindow`.
  *
  * Returns: the newly created `AdwPreferencesWindow`
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 GtkWidget *
 adw_preferences_window_new (void)
@@ -762,6 +777,8 @@ adw_preferences_window_new (void)
  * @page: the page to add
  *
  * Adds a preferences page to @self.
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 void
 adw_preferences_window_add (AdwPreferencesWindow *self,
@@ -792,6 +809,8 @@ adw_preferences_window_add (AdwPreferencesWindow *self,
  * @page: the page to remove
  *
  * Removes a page from @self.
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 void
 adw_preferences_window_remove (AdwPreferencesWindow *self,
@@ -820,6 +839,8 @@ adw_preferences_window_remove (AdwPreferencesWindow *self,
  * Gets the currently visible page of @self.
  *
  * Returns: (transfer none) (nullable): the visible page
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 AdwPreferencesPage *
 adw_preferences_window_get_visible_page (AdwPreferencesWindow *self)
@@ -839,6 +860,8 @@ adw_preferences_window_get_visible_page (AdwPreferencesWindow *self)
  * @page: a page of @self
  *
  * Makes @page the visible page of @self.
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 void
 adw_preferences_window_set_visible_page (AdwPreferencesWindow *self,
@@ -861,6 +884,8 @@ adw_preferences_window_set_visible_page (AdwPreferencesWindow *self,
  * Gets the name of currently visible page of @self.
  *
  * Returns: (transfer none) (nullable): the name of the visible page
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 const char *
 adw_preferences_window_get_visible_page_name (AdwPreferencesWindow *self)
@@ -882,6 +907,8 @@ adw_preferences_window_get_visible_page_name (AdwPreferencesWindow *self)
  * Makes the page with the given name visible.
  *
  * See [property@PreferencesWindow:visible-page].
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 void
 adw_preferences_window_set_visible_page_name (AdwPreferencesWindow *self,
@@ -897,12 +924,14 @@ adw_preferences_window_set_visible_page_name (AdwPreferencesWindow *self,
 }
 
 /**
- * adw_preferences_window_get_search_enabled: (attributes org.gtk.Method.get_property=search-enabled)
+ * adw_preferences_window_get_search_enabled:
  * @self: a preferences window
  *
  * Gets whether search is enabled for @self.
  *
  * Returns: whether search is enabled for @self.
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 gboolean
 adw_preferences_window_get_search_enabled (AdwPreferencesWindow *self)
@@ -917,11 +946,13 @@ adw_preferences_window_get_search_enabled (AdwPreferencesWindow *self)
 }
 
 /**
- * adw_preferences_window_set_search_enabled: (attributes org.gtk.Method.set_property=search-enabled)
+ * adw_preferences_window_set_search_enabled:
  * @self: a preferences window
  * @search_enabled: whether search is enabled
  *
  * Sets whether search is enabled for @self.
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 void
 adw_preferences_window_set_search_enabled (AdwPreferencesWindow *self,
@@ -951,7 +982,7 @@ adw_preferences_window_set_search_enabled (AdwPreferencesWindow *self,
 }
 
 /**
- * adw_preferences_window_set_can_navigate_back: (attributes org.gtk.Method.set_property=can-navigate-back)
+ * adw_preferences_window_set_can_navigate_back:
  * @self: a preferences window
  * @can_navigate_back: the new value
  *
@@ -968,9 +999,9 @@ adw_preferences_window_set_search_enabled (AdwPreferencesWindow *self,
  *
  * For right-to-left locales, gestures and shortcuts are reversed.
  *
- * Deprecated: 1.4: Use [method@NavigationPage.set_can_pop] instead.
- *
  * Has no effect for subpages added with [method@PreferencesWindow.push_subpage].
+ *
+ * Deprecated: 1.4: Use [method@NavigationPage.set_can_pop] instead.
  */
 void
 adw_preferences_window_set_can_navigate_back (AdwPreferencesWindow *self,
@@ -993,7 +1024,7 @@ adw_preferences_window_set_can_navigate_back (AdwPreferencesWindow *self,
 }
 
 /**
- * adw_preferences_window_get_can_navigate_back: (attributes org.gtk.Method.get_property=can-navigate-back)
+ * adw_preferences_window_get_can_navigate_back:
  * @self: a preferences window
  *
  * Gets whether gestures and shortcuts for closing subpages are enabled.
@@ -1086,6 +1117,7 @@ adw_preferences_window_close_subpage (AdwPreferencesWindow *self)
  * The page will be automatically removed when popped.
  *
  * Since: 1.4
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 void
 adw_preferences_window_push_subpage (AdwPreferencesWindow *self,
@@ -1110,6 +1142,7 @@ adw_preferences_window_push_subpage (AdwPreferencesWindow *self,
  * Returns: `TRUE` if a page has been popped
  *
  * Since: 1.4
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 gboolean
 adw_preferences_window_pop_subpage (AdwPreferencesWindow *self)
@@ -1131,6 +1164,8 @@ adw_preferences_window_pop_subpage (AdwPreferencesWindow *self)
  * Displays @toast.
  *
  * See [method@ToastOverlay.add_toast].
+ *
+ * Deprecated: 1.6: Use [class@PreferencesDialog].
  */
 void
 adw_preferences_window_add_toast (AdwPreferencesWindow *self,

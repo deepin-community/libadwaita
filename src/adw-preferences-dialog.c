@@ -540,7 +540,7 @@ adw_preferences_dialog_class_init (AdwPreferencesDialogClass *klass)
   object_class->dispose = adw_preferences_dialog_dispose;
 
   /**
-   * AdwPreferencesDialog:visible-page: (attributes org.gtk.Property.get=adw_preferences_dialog_get_visible_page org.gtk.Property.set=adw_preferences_dialog_set_visible_page)
+   * AdwPreferencesDialog:visible-page:
    *
    * The currently visible page.
    *
@@ -552,7 +552,7 @@ adw_preferences_dialog_class_init (AdwPreferencesDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesDialog:visible-page-name: (attributes org.gtk.Property.get=adw_preferences_dialog_get_visible_page_name org.gtk.Property.set=adw_preferences_dialog_set_visible_page_name)
+   * AdwPreferencesDialog:visible-page-name:
    *
    * The name of the currently visible page.
    *
@@ -566,7 +566,7 @@ adw_preferences_dialog_class_init (AdwPreferencesDialogClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwPreferencesDialog:search-enabled: (attributes org.gtk.Property.get=adw_preferences_dialog_get_search_enabled org.gtk.Property.set=adw_preferences_dialog_set_search_enabled)
+   * AdwPreferencesDialog:search-enabled:
    *
    * Whether search is enabled.
    *
@@ -579,7 +579,11 @@ adw_preferences_dialog_class_init (AdwPreferencesDialogClass *klass)
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 
+#ifdef __APPLE__
+  gtk_widget_class_add_binding (widget_class, GDK_KEY_f, GDK_META_MASK, search_open_cb, NULL);
+#else
   gtk_widget_class_add_binding (widget_class, GDK_KEY_f, GDK_CONTROL_MASK, search_open_cb, NULL);
+#endif
 
   gtk_widget_class_set_template_from_resource (widget_class,
                                                "/org/gnome/Adwaita/ui/adw-preferences-dialog.ui");
@@ -839,7 +843,7 @@ adw_preferences_dialog_set_visible_page_name (AdwPreferencesDialog *self,
 }
 
 /**
- * adw_preferences_dialog_get_search_enabled: (attributes org.gtk.Method.get_property=search-enabled)
+ * adw_preferences_dialog_get_search_enabled:
  * @self: a preferences dialog
  *
  * Gets whether search is enabled for @self.
@@ -861,7 +865,7 @@ adw_preferences_dialog_get_search_enabled (AdwPreferencesDialog *self)
 }
 
 /**
- * adw_preferences_dialog_set_search_enabled: (attributes org.gtk.Method.set_property=search-enabled)
+ * adw_preferences_dialog_set_search_enabled:
  * @self: a preferences dialog
  * @search_enabled: whether search is enabled
  *
