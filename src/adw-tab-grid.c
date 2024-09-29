@@ -1648,7 +1648,7 @@ reorder_update_cb (AdwTabGrid *self,
   double start_x, start_y, x, y;
   GdkDevice *device;
 
-  if (!self->pressed_tab) {
+  if (!self->pressed_tab || !self->pressed_tab->page) {
     gtk_gesture_set_state (gesture, GTK_EVENT_SEQUENCE_DENIED);
     return;
   }
@@ -1680,9 +1680,7 @@ reorder_update_cb (AdwTabGrid *self,
   device = gtk_event_controller_get_current_event_device (GTK_EVENT_CONTROLLER (gesture));
 
   if (!self->pinned &&
-      self->pressed_tab &&
       self->pressed_tab != self->reorder_placeholder &&
-      self->pressed_tab->page &&
       !is_touchscreen (gesture) &&
       check_dnd_threshold (self, x, y)) {
     begin_drag (self, device);
@@ -2404,7 +2402,7 @@ drag_end (AdwTabGrid *self,
 
   if (self->drag_icon) {
     g_clear_object (&self->drag_icon->resize_animation);
-    g_clear_pointer (&self->drag_icon, g_free);
+    g_clear_pointer (&self->drag_icon, g_atomic_rc_box_release);
   }
 
   g_object_unref (drag);
@@ -2474,7 +2472,7 @@ create_drag_icon (AdwTabGrid *self,
   DragIcon *icon;
   AdwAnimationTarget *target;
 
-  icon = g_new0 (DragIcon, 1);
+  icon = g_atomic_rc_box_new0 (DragIcon);
 
   icon->drag = drag;
 
@@ -2503,7 +2501,7 @@ create_drag_icon (AdwTabGrid *self,
 
   target = adw_callback_animation_target_new ((AdwAnimationTargetFunc)
                                               icon_resize_animation_value_cb,
-                                              icon, NULL);
+                                              g_atomic_rc_box_acquire (icon), NULL);
   icon->resize_animation =
     adw_timed_animation_new (GTK_WIDGET (icon->tab), 0, 1,
                              ICON_RESIZE_ANIMATION_DURATION, target);

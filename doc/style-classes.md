@@ -18,13 +18,19 @@ appearance.
   <img src="buttons-suggested-action.png" alt="buttons-suggested-action">
 </picture>
 
+<picture>
+  <source srcset="button-row-suggested-action-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="button-row-suggested-action.png" alt="button-row-suggested-action">
+</picture>
+
 The `.suggested-action` style class makes the button use accent colors. It can
 be used to denote important buttons, for example, the affirmative button in an
 action dialog.
 
 It can be used in combination with [`.circular`](#circular) or [`.pill`](#pill).
 
-Can also be used with [class@Gtk.MenuButton] or [class@SplitButton].
+Can also be used with [class@Gtk.MenuButton], [class@SplitButton] or
+[class@ButtonRow].
 
 ## Destructive Action
 
@@ -33,13 +39,20 @@ Can also be used with [class@Gtk.MenuButton] or [class@SplitButton].
   <img src="buttons-destructive-action.png" alt="buttons-destructive-action">
 </picture>
 
+<picture>
+  <source srcset="button-row-destructive-action-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="button-row-destructive-action.png" alt="button-row-destructive-action">
+</picture>
+
 The `.destructive-action` style class makes the button use destructive colors.
 It can be used to draw attention to the potentially damaging consequences of
 using a button. This style acts as a warning to the user.
 
-It can be used in combination with [`.circular`](#circular) or [`.pill`](#pill).
+It can be used in combination with [`.flat`](#flat), [`.circular`](#circular),
+or [`.pill`](#pill).
 
-Can also be used with [class@Gtk.MenuButton] or [class@SplitButton].
+Can also be used with [class@Gtk.MenuButton], [class@SplitButton] or
+[class@ButtonRow].
 
 ## Flat
 
@@ -71,39 +84,6 @@ The `.raised` style class makes the button use the regular appearance instead of
 the flat one.
 
 This style class is only useful inside [toolbars and similar widgets](#toolbars).
-
-It can be used in combination with [`.circular`](#circular) or [`.pill`](#pill).
-
-Can also be used with [class@Gtk.MenuButton] or [class@SplitButton].
-
-## Opaque
-
-<picture>
-  <source srcset="buttons-opaque-dark.png" media="(prefers-color-scheme: dark)">
-  <img src="buttons-opaque.png" alt="buttons-opaque">
-</picture>
-
-The `.opaque` style class gives the button an opaque background. It's intended
-to be used together with custom styles that override `background-color` and
-`color`, to create buttons with an appearance similar to
-[`.suggested-action`](#suggested-action) and
-[`.destructive-action`](#destructive-action), but with custom colors.
-
-For example, `.suggested-action` and `.destructive-action` are equivalent to
-using the `.opaque` style
-class with the following CSS:
-
-```css
-#custom-suggested-action-button {
-  background-color: @accent_bg_color;
-  color: @accent_fg_color;
-}
-
-#custom-destructive-action-button {
-  background-color: @destructive_bg_color;
-  color: @destructive_fg_color;
-}
-```
 
 It can be used in combination with [`.circular`](#circular) or [`.pill`](#pill).
 
@@ -169,7 +149,6 @@ classes:
 
 * [`.flat`](#flat)
 * [`.suggested-action`](#suggested-action)
-* [`.destructive-action`](#destructive-action)
 * [`.opaque`](#opaque)
 
 If a linked box is contained within a [toolbar or a similar widget](#toolbars),
@@ -213,9 +192,10 @@ The following buttons keep default appearance:
 * Buttons with other content;
 * Buttons within widgets with the [`.linked`](#linked-controls) style
   class;
-* Buttons with the [`.suggested-action`](#suggested-action),
-  [`.destructive-action`](#destructive-action) or [`.opaque`](#opaque) style
-  classes.
+* Buttons with the [`.suggested-action`](style-classes.html#suggested-action) or
+  [`.opaque`](style-classes.html#opaque) style classes;
+* Buttons with the [`.destructive-action`](style-classes.html#destructive-action)
+  style class;
 * Buttons with the [`.raised`](#raised) style class.
 
 It also ensures 6px margins and spacing between widgets. The
@@ -248,8 +228,9 @@ similar widgets](#toolbars) to separate groups of widgets from each other.
 The `.dim-label` style class makes the widget it's applied to partially
 transparent.
 
-The level of transparency differs between regular and high contrast styles. As
-such, it's highly recommended to be used instead of changing opacity manually.
+The opacity changes between regular and high contrast styles and is represented
+by the [`--dim-opacity`](css-variables.html#opacity) variable. Use that variable
+if the style class cannot be used directly.
 
 # Typography Styles
 
@@ -324,14 +305,15 @@ The following style classes change widget colors:
 
 Class             | Color
 ----------------- | -------------------------------------------
-<tt>.accent</tt>  | [accent color](named-colors.html#accent-colors)
-<tt>.success</tt> | [success color](named-colors.html#success-colors)
-<tt>.warning</tt> | [warning color](named-colors.html#warning-colors)
-<tt>.error</tt>   | [error color](named-colors.html#error-colors)
+<tt>.accent</tt>  | [accent color](css-variables.html#accent-colors)
+<tt>.success</tt> | [success color](css-variables.html#success-colors)
+<tt>.warning</tt> | [warning color](css-variables.html#warning-colors)
+<tt>.error</tt>   | [error color](css-variables.html#error-colors)
 
 They can be applied to any widget.
 
-The `.error`, `.warning` and `.success` style classes can be applied to
+The `.error`, `.warning`, `.success` style classes also change the widget's
+accent color to the respective color. They can also be applied to
 [class@Gtk.Entry]. In that case, they can be used to indicate input validation
 state.
 
@@ -345,6 +327,16 @@ state.
 The `.boxed-list` style class can be applied to a [class@Gtk.ListBox] to make it
 a [boxed list](boxed-lists.html). The list box should have
 [property@Gtk.ListBox:selection-mode] set to `GTK_SELECTION_NONE`.
+
+<picture>
+  <source srcset="boxed-lists-separate-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="boxed-lists-separate.png" alt="boxed-lists-separate">
+</picture>
+
+The `.boxed-list-separate` style class is similar to `.boxed-list`, but presents
+each row as a separate card instead of the whole list being a single card with
+separators. The list box should have [property@Gtk.ListBox:selection-mode] set
+to `GTK_SELECTION_NONE`.
 
 <picture>
   <source srcset="cards-dark.png" media="(prefers-color-scheme: dark)">
@@ -369,9 +361,10 @@ states automatically, without needing the `.activatable` class.
 </picture>
 
 The `.navigation-sidebar` style class can be applied to a [class@Gtk.ListBox]
-or [class@Gtk.ListView] to make it look like a sidebar: it makes the
-items rounded and padded, makes selected items use a neutral color instead of
-accent, and removes the default list background.
+or [class@Gtk.ListView], as well as [class@Gtk.FlowBox] and
+[class@Gtk.GridView], to make it look like a sidebar: it makes the items rounded
+and padded, makes selected items use neutral color instead of accent, and
+removes the default list background.
 
 # App Icons
 
@@ -458,7 +451,7 @@ attached to the top of the window.
 </picture>
 
 The `.background` style class can be used with any widget to give it the default
-[window](named-colors.html#window-colors) background and foreground colors.
+[window](css-variables.html#window-colors) background and foreground colors.
 
 This can be useful when a widget needs an opaque background.
 
@@ -466,8 +459,8 @@ It's equivalent to using the following CSS:
 
 ```css
 .background {
-  background-color: @window_bg_color;
-  color: @window_fg_color;
+  background-color: var(--window-bg-color);
+  color: var(--window-fg-color);
 }
 ```
 
@@ -479,14 +472,14 @@ It's equivalent to using the following CSS:
 </picture>
 
 The `.view` style class can be used with any widget to give it the default
-[view](named-colors.html#window-colors) background and foreground colors.
+[view](css-variables.html#window-colors) background and foreground colors.
 
 It's equivalent to using the following CSS:
 
 ```css
 .view {
-  background-color: @view_bg_color;
-  color: @view_fg_color;
+  background-color: var(--view-bg-color);
+  color: var(--view-fg-color);
 }
 ```
 
@@ -504,7 +497,7 @@ It's equivalent to using the following CSS:
 
 ```css
 .frame {
-  border: 1px solid @borders;
+  border: 1px solid var(--border-color);
 }
 ```
 
@@ -542,7 +535,7 @@ appearance.
 
 This style class is typically used to indicate unstable or nightly applications.
 
-# Inline Tab Bars & Search Bars
+# Inline
 
 <picture>
   <source srcset="search-bar-inline-dark.png" media="(prefers-color-scheme: dark)">
@@ -554,10 +547,21 @@ This style class is typically used to indicate unstable or nightly applications.
   <img src="tab-bar-inline.png" alt="tab-bar-inline">
 </picture>
 
-By default [class@Gtk.SearchBar] and [class@TabBar] look like a part of an
-[class@HeaderBar] or [class@Gtk.HeaderBar] and are intended to be used directly
-attached to one. With the `.inline` style class they have neutral backgrounds
-and can be used in different contexts instead.
+The `.inline` style class can be used with [class@Gtk.SearchBar], [class@TabBar]
+or [class@Gtk.TextView].
+
+By default `GtkSearchBar` and `AdwTabBar` look like a part of an `AdwHeaderBar`
+and are intended to be used directly attached to one or used as
+[class@ToolbarView] toolbars. With the `.inline` style class they have neutral
+backgrounds and can be used in different contexts instead.
+
+When used with `GtkTextView`, it allows it to e.g. be put into a card while
+following its styles.
+
+::: note
+    When used with `GtkSourceView`, it only changes its background color, but
+    not text color, so the application is responsible for changing its style
+    scheme appropriately.
 
 # Undershoot Indicators
 
@@ -602,6 +606,12 @@ instead, which is useful for displaying read-only properties, as follows:
 ```
 
 Since: 1.4
+
+The `.monospace` style class with `.property` only makes the subtitle monospace,
+but not the title or any extra widgets. To make everything in the row monospace,
+apply `.monospace` to the [class@Gtk.ListBox] around the row.
+
+Since: 1.6
 
 # Deprecated Style Classes
 
@@ -662,7 +672,7 @@ The [`.title-1`](#typography-styles) style class should be used instead.
 
 Deprecated since: 1.2
 
-# Flat Header Bar
+## Flat Header Bar
 
 <picture>
   <source srcset="flat-header-bar-dark.png" media="(prefers-color-scheme: dark)">
@@ -675,3 +685,43 @@ The `.flat` style class can be used with an [class@HeaderBar] or
 Use [class@ToolbarView] instead.
 
 Deprecated since: 1.4
+
+## `.opaque`
+
+<picture>
+  <source srcset="buttons-opaque-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="buttons-opaque.png" alt="buttons-opaque">
+</picture>
+
+The `.opaque` style class gives the button an opaque background. It's intended
+to be used together with custom styles that override `background-color` and
+`color`, to create buttons with an appearance similar to
+[`.suggested-action`](#suggested-action), but with custom colors.
+
+For example, `.suggested-action` is equivalent to using the `.opaque` style
+using the `.opaque` style
+class with the following CSS:
+
+```css
+#custom-suggested-action-button {
+  background-color: var(--accent-bg-color);
+  color: var(--accent-fg-color);
+}
+```
+
+It can be used in combination with [`.circular`](#circular) or [`.pill`](#pill).
+
+Can also be used with [class@Gtk.MenuButton] or [class@SplitButton].
+
+Use [`.suggested-action`](#suggested-action) instead, and override the accent
+color, for example:
+
+```css
+#custom-destructive-action-button {
+  --accent-bg-color: var(--destructive-bg-color);
+  --accent-fg-color: var(--destructive-fg-color);
+  --accent-color: var(--destructive-color);
+}
+```
+
+Deprecated since: 1.6

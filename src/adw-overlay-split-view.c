@@ -63,8 +63,6 @@
  *
  * ```xml
  * <object class="AdwWindow">
- *   <property name="width-request">360</property>
- *   <property name="height-request">200</property>
  *   <property name="default-width">800</property>
  *   <property name="default-height">800</property>
  *   <child>
@@ -247,7 +245,7 @@ update_swipe_tracker (AdwOverlaySplitView *self)
 static void
 update_shield (AdwOverlaySplitView *self)
 {
-  gtk_widget_set_visible (self->shield,
+  gtk_widget_set_child_visible (self->shield,
                           self->collapsed && self->show_progress > 0);
 
   gtk_widget_queue_allocate (GTK_WIDGET (self));
@@ -302,11 +300,17 @@ set_show_sidebar (AdwOverlaySplitView *self,
 
   self->show_sidebar = show_sidebar;
 
+  if (show_sidebar)
+    gtk_widget_set_child_visible (self->sidebar_bin, TRUE);
+
   if (animate) {
     if (!self->swipe_active)
       animate_sidebar (self, show_sidebar ? 1 : 0, velocity);
   } else {
     set_show_progress (show_sidebar ? 1 : 0, self);
+
+    if (!show_sidebar)
+      gtk_widget_set_child_visible (self->sidebar_bin, FALSE);
   }
 
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_SHOW_SIDEBAR]);
@@ -347,6 +351,7 @@ begin_swipe_cb (AdwSwipeTracker     *tracker,
     return;
 
   adw_animation_pause (self->animation);
+  gtk_widget_set_child_visible (self->sidebar_bin, TRUE);
 
   self->swipe_detected = FALSE;
   self->swipe_active = TRUE;
@@ -701,6 +706,13 @@ update_collapsed (AdwOverlaySplitView *self)
 }
 
 static void
+animation_done_cb (AdwOverlaySplitView *self)
+{
+  if (self->show_progress < 0.5)
+    gtk_widget_set_child_visible (self->sidebar_bin, FALSE);
+}
+
+static void
 adw_overlay_split_view_snapshot (GtkWidget   *widget,
                                  GtkSnapshot *snapshot)
 {
@@ -860,7 +872,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
   widget_class->compute_expand = adw_widget_compute_expand;
 
   /**
-   * AdwOverlaySplitView:content: (attributes org.gtk.Property.get=adw_overlay_split_view_get_content org.gtk.Property.set=adw_overlay_split_view_set_content)
+   * AdwOverlaySplitView:content:
    *
    * The content widget.
    *
@@ -872,7 +884,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:sidebar: (attributes org.gtk.Property.get=adw_overlay_split_view_get_sidebar org.gtk.Property.set=adw_overlay_split_view_set_sidebar)
+   * AdwOverlaySplitView:sidebar:
    *
    * The sidebar widget.
    *
@@ -884,7 +896,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:collapsed: (attributes org.gtk.Property.get=adw_overlay_split_view_get_collapsed org.gtk.Property.set=adw_overlay_split_view_set_collapsed)
+   * AdwOverlaySplitView:collapsed:
    *
    * Whether the split view is collapsed.
    *
@@ -899,7 +911,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:sidebar-position: (attributes org.gtk.Property.get=adw_overlay_split_view_get_sidebar_position org.gtk.Property.set=adw_overlay_split_view_set_sidebar_position)
+   * AdwOverlaySplitView:sidebar-position:
    *
    * The sidebar position.
    *
@@ -915,7 +927,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:show-sidebar: (attributes org.gtk.Property.get=adw_overlay_split_view_get_show_sidebar org.gtk.Property.set=adw_overlay_split_view_set_show_sidebar)
+   * AdwOverlaySplitView:show-sidebar:
    *
    * Whether the sidebar widget is shown.
    *
@@ -927,7 +939,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:pin-sidebar: (attributes org.gtk.Property.get=adw_overlay_split_view_get_pin_sidebar org.gtk.Property.set=adw_overlay_split_view_set_pin_sidebar)
+   * AdwOverlaySplitView:pin-sidebar:
    *
    * Whether the sidebar widget is pinned.
    *
@@ -943,7 +955,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:enable-show-gesture: (attributes org.gtk.Property.get=adw_overlay_split_view_get_enable_show_gesture org.gtk.Property.set=adw_overlay_split_view_set_enable_show_gesture)
+   * AdwOverlaySplitView:enable-show-gesture:
    *
    * Whether the sidebar can be opened with an edge swipe gesture.
    *
@@ -957,7 +969,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:enable-hide-gesture: (attributes org.gtk.Property.get=adw_overlay_split_view_get_enable_hide_gesture org.gtk.Property.set=adw_overlay_split_view_set_enable_hide_gesture)
+   * AdwOverlaySplitView:enable-hide-gesture:
    *
    * Whether the sidebar can be closed with a swipe gesture.
    *
@@ -971,7 +983,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:min-sidebar-width: (attributes org.gtk.Property.get=adw_overlay_split_view_get_min_sidebar_width org.gtk.Property.set=adw_overlay_split_view_set_min_sidebar_width)
+   * AdwOverlaySplitView:min-sidebar-width:
    *
    * The minimum sidebar width.
    *
@@ -989,7 +1001,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:max-sidebar-width: (attributes org.gtk.Property.get=adw_overlay_split_view_get_max_sidebar_width org.gtk.Property.set=adw_overlay_split_view_set_max_sidebar_width)
+   * AdwOverlaySplitView:max-sidebar-width:
    *
    * The maximum sidebar width.
    *
@@ -1007,7 +1019,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:sidebar-width-fraction: (attributes org.gtk.Property.get=adw_overlay_split_view_get_sidebar_width_fraction org.gtk.Property.set=adw_overlay_split_view_set_sidebar_width_fraction)
+   * AdwOverlaySplitView:sidebar-width-fraction:
    *
    * The preferred sidebar width as a fraction of the total width.
    *
@@ -1026,7 +1038,7 @@ adw_overlay_split_view_class_init (AdwOverlaySplitViewClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * AdwOverlaySplitView:sidebar-width-unit: (attributes org.gtk.Property.get=adw_overlay_split_view_get_sidebar_width_unit org.gtk.Property.set=adw_overlay_split_view_set_sidebar_width_unit)
+   * AdwOverlaySplitView:sidebar-width-unit:
    *
    * The length unit for minimum and maximum sidebar widths.
    *
@@ -1114,6 +1126,9 @@ adw_overlay_split_view_init (AdwOverlaySplitView *self)
   self->animation =
     adw_spring_animation_new (GTK_WIDGET (self), 0, 0,
                              adw_spring_params_new (1, 0.5, 500), target);
+
+  g_signal_connect_swapped (self->animation, "done",
+                            G_CALLBACK (animation_done_cb), self);
 
   update_shield (self);
   update_collapsed (self);
@@ -1262,7 +1277,7 @@ adw_overlay_split_view_new (void)
 }
 
 /**
- * adw_overlay_split_view_get_sidebar: (attributes org.gtk.Method.get_property=sidebar)
+ * adw_overlay_split_view_get_sidebar:
  * @self: an overlay split view
  *
  * Gets the sidebar widget for @self.
@@ -1280,7 +1295,7 @@ adw_overlay_split_view_get_sidebar (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_sidebar: (attributes org.gtk.Method.set_property=sidebar)
+ * adw_overlay_split_view_set_sidebar:
  * @self: an overlay split view
  * @sidebar: (nullable): the sidebar widget
  *
@@ -1309,7 +1324,7 @@ adw_overlay_split_view_set_sidebar (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_content: (attributes org.gtk.Method.get_property=content)
+ * adw_overlay_split_view_get_content:
  * @self: an overlay split view
  *
  * Gets the content widget for @self.
@@ -1327,7 +1342,7 @@ adw_overlay_split_view_get_content (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_content: (attributes org.gtk.Method.set_property=content)
+ * adw_overlay_split_view_set_content:
  * @self: an overlay split view
  * @content: (nullable): the content widget
  *
@@ -1354,7 +1369,7 @@ adw_overlay_split_view_set_content (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_collapsed: (attributes org.gtk.Method.get_property=collapsed)
+ * adw_overlay_split_view_get_collapsed:
  * @self: an overlay split view
  *
  * Gets whether @self is collapsed.
@@ -1372,7 +1387,7 @@ adw_overlay_split_view_get_collapsed (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_collapsed: (attributes org.gtk.Method.set_property=collapsed)
+ * adw_overlay_split_view_set_collapsed:
  * @self: an overlay split view
  * @collapsed: whether @self is collapsed
  *
@@ -1428,7 +1443,7 @@ adw_overlay_split_view_set_collapsed (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_sidebar_position: (attributes org.gtk.Method.get_property=sidebar-position)
+ * adw_overlay_split_view_get_sidebar_position:
  * @self: an overlay split view
  *
  * Gets the sidebar position for @self.
@@ -1446,7 +1461,7 @@ adw_overlay_split_view_get_sidebar_position (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_sidebar_position: (attributes org.gtk.Method.set_property=sidebar-position)
+ * adw_overlay_split_view_set_sidebar_position:
  * @self: an overlay split view
  * @position: the new position
  *
@@ -1483,7 +1498,7 @@ adw_overlay_split_view_set_sidebar_position (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_show_sidebar: (attributes org.gtk.Method.get_property=show-sidebar)
+ * adw_overlay_split_view_get_show_sidebar:
  * @self: an overlay split view
  *
  * Gets whether the sidebar widget is shown for @self.
@@ -1501,7 +1516,7 @@ adw_overlay_split_view_get_show_sidebar (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_show_sidebar: (attributes org.gtk.Method.set_property=show-sidebar)
+ * adw_overlay_split_view_set_show_sidebar:
  * @self: an overlay split view
  * @show_sidebar: whether to show the sidebar widget
  *
@@ -1519,7 +1534,7 @@ adw_overlay_split_view_set_show_sidebar (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_pin_sidebar: (attributes org.gtk.Method.get_property=pin-sidebar)
+ * adw_overlay_split_view_get_pin_sidebar:
  * @self: an overlay split view
  *
  * Gets whether the sidebar widget is pinned for @self.
@@ -1537,7 +1552,7 @@ adw_overlay_split_view_get_pin_sidebar (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_pin_sidebar: (attributes org.gtk.Method.set_property=pin-sidebar)
+ * adw_overlay_split_view_set_pin_sidebar:
  * @self: an overlay split view
  * @pin_sidebar: whether to pin the sidebar widget
  *
@@ -1566,7 +1581,7 @@ adw_overlay_split_view_set_pin_sidebar (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_enable_show_gesture: (attributes org.gtk.Method.get_property=enable-show-gesture)
+ * adw_overlay_split_view_get_enable_show_gesture:
  * @self: an overlay split view
  *
  * Gets whether @self can be opened with an edge swipe gesture.
@@ -1584,7 +1599,7 @@ adw_overlay_split_view_get_enable_show_gesture (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_enable_show_gesture: (attributes org.gtk.Method.set_property=enable-show-gesture)
+ * adw_overlay_split_view_set_enable_show_gesture:
  * @self: an overlay split view
  * @enable_show_gesture: whether @self can be opened with a swipe gesture
  *
@@ -1613,7 +1628,7 @@ adw_overlay_split_view_set_enable_show_gesture (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_enable_hide_gesture: (attributes org.gtk.Method.get_property=enable-hide-gesture)
+ * adw_overlay_split_view_get_enable_hide_gesture:
  * @self: an overlay split view
  *
  * Gets whether @self can be closed with a swipe gesture.
@@ -1631,7 +1646,7 @@ adw_overlay_split_view_get_enable_hide_gesture (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_enable_hide_gesture: (attributes org.gtk.Method.set_property=enable-hide-gesture)
+ * adw_overlay_split_view_set_enable_hide_gesture:
  * @self: an overlay split view
  * @enable_hide_gesture: whether @self can be closed with a swipe gesture
  *
@@ -1660,7 +1675,7 @@ adw_overlay_split_view_set_enable_hide_gesture (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_min_sidebar_width: (attributes org.gtk.Method.get_property=min-sidebar-width)
+ * adw_overlay_split_view_get_min_sidebar_width:
  * @self: an overlay split view
  *
  * Gets the minimum sidebar width for @self.
@@ -1678,7 +1693,7 @@ adw_overlay_split_view_get_min_sidebar_width (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_min_sidebar_width: (attributes org.gtk.Method.set_property=min-sidebar-width)
+ * adw_overlay_split_view_set_min_sidebar_width:
  * @self: an overlay split view
  * @width: the minimum width
  *
@@ -1708,7 +1723,7 @@ adw_overlay_split_view_set_min_sidebar_width (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_max_sidebar_width: (attributes org.gtk.Method.get_property=max-sidebar-width)
+ * adw_overlay_split_view_get_max_sidebar_width:
  * @self: an overlay split view
  *
  * Gets the maximum sidebar width for @self.
@@ -1726,7 +1741,7 @@ adw_overlay_split_view_get_max_sidebar_width (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_max_sidebar_width: (attributes org.gtk.Method.set_property=max-sidebar-width)
+ * adw_overlay_split_view_set_max_sidebar_width:
  * @self: an overlay split view
  * @width: the maximum width
  *
@@ -1756,7 +1771,7 @@ adw_overlay_split_view_set_max_sidebar_width (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_sidebar_width_fraction: (attributes org.gtk.Method.get_property=sidebar-width-fraction)
+ * adw_overlay_split_view_get_sidebar_width_fraction:
  * @self: an overlay split view
  *
  * Gets the preferred sidebar width fraction for @self.
@@ -1774,7 +1789,7 @@ adw_overlay_split_view_get_sidebar_width_fraction (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_sidebar_width_fraction: (attributes org.gtk.Method.set_property=sidebar-width-fraction)
+ * adw_overlay_split_view_set_sidebar_width_fraction:
  * @self: an overlay split view
  * @fraction: the preferred width fraction
  *
@@ -1807,7 +1822,7 @@ adw_overlay_split_view_set_sidebar_width_fraction (AdwOverlaySplitView *self,
 }
 
 /**
- * adw_overlay_split_view_get_sidebar_width_unit: (attributes org.gtk.Method.get_property=sidebar-width-unit)
+ * adw_overlay_split_view_get_sidebar_width_unit:
  * @self: an overlay split view
  *
  * Gets the length unit for minimum and maximum sidebar widths.
@@ -1825,7 +1840,7 @@ adw_overlay_split_view_get_sidebar_width_unit (AdwOverlaySplitView *self)
 }
 
 /**
- * adw_overlay_split_view_set_sidebar_width_unit: (attributes org.gtk.Method.set_property=sidebar-width-unit)
+ * adw_overlay_split_view_set_sidebar_width_unit:
  * @self: an overlay split view
  * @unit: the length unit
  *

@@ -1,7 +1,7 @@
 [library]
 version = "@VERSION@"
 description = "Building blocks for modern GNOME applications"
-authors = "Purism SPC"
+authors = "Libadwaita contributors"
 license = "LGPL-2.1-or-later"
 browse_url = "https://gitlab.gnome.org/GNOME/libadwaita/"
 repository_url = "https://gitlab.gnome.org/GNOME/libadwaita.git"
@@ -45,7 +45,7 @@ content_files = [
   "adaptive-layouts.md",
 
   "styles-and-appearance.md",
-  "named-colors.md",
+  "css-variables.md",
   "style-classes.md",
 
   "migrating-libhandy-1-4-to-libadwaita.md",
@@ -74,6 +74,10 @@ content_images = [
   "images/adaptive-boxed-lists-narrow-dark.png",
   "images/adaptive-boxed-lists-wide.png",
   "images/adaptive-boxed-lists-wide-dark.png",
+  "images/adaptive-multi-layout-narrow.png",
+  "images/adaptive-multi-layout-narrow-dark.png",
+  "images/adaptive-multi-layout-wide.png",
+  "images/adaptive-multi-layout-wide-dark.png",
   "images/adaptive-sidebar-narrow-1.png",
   "images/adaptive-sidebar-narrow-1-dark.png",
   "images/adaptive-sidebar-narrow-2.png",
@@ -118,12 +122,22 @@ content_images = [
   "images/banner-dark.png",
   "images/bin.png",
   "images/bin-dark.png",
+  "images/bottom-sheet.png",
+  "images/bottom-sheet-dark.png",
   "images/boxed-lists.png",
   "images/boxed-lists-dark.png",
+  "images/boxed-lists-separate.png",
+  "images/boxed-lists-separate-dark.png",
   "images/breakpoint-bin.png",
   "images/breakpoint-bin-dark.png",
   "images/button-content.png",
   "images/button-content-dark.png",
+  "images/button-row-destructive-action.png",
+  "images/button-row-destructive-action-dark.png",
+  "images/button-row-suggested-action.png",
+  "images/button-row-suggested-action-dark.png",
+  "images/button-rows.png",
+  "images/button-rows-dark.png",
   "images/buttons-circular.png",
   "images/buttons-circular-dark.png",
   "images/buttons-destructive-action.png",
@@ -232,6 +246,8 @@ content_images = [
   "images/selection-mode-checks-dark.png",
   "images/spin-row.png",
   "images/spin-row-dark.png",
+  "images/spinner.png",
+  "images/spinner-dark.png",
   "images/split-button.png",
   "images/split-button-dark.png",
   "images/squeezer-narrow.png",
@@ -319,3 +335,22 @@ content_images = [
   "libadwaita.svg",
 ]
 
+[[object]]
+name = "DEPRECATED_FOR"
+hidden = true
+
+[[object]]
+pattern = "DEPRECATED_IN_*"
+hidden = true
+
+[[object]]
+pattern = "DEPRECATED_TYPE_IN_*"
+hidden = true
+
+[[object]]
+name = "UNAVAILABLE"
+hidden = true
+
+[[object]]
+name = "ENCODE_VERSION"
+hidden = true
